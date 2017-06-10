@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<persistence xmlns="http://xmlns.jcp.org/xml/ns/persistence"
+             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+             xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/persistence
+             http://xmlns.jcp.org/xml/ns/persistence/persistence_2_1.xsd"
+             version="2.1">
+
+    <persistence-unit name="is-jpa">
+        <jta-data-source>java:/jboss/datasources/ISDS-test</jta-data-source>
+
+        <class>si.fri.demo.is.core.jpa.entities.Order</class>
+        <class>si.fri.demo.is.core.jpa.entities.Product</class>
+        <class>si.fri.demo.is.core.jpa.entities.Customer</class>
+        <class>si.fri.demo.is.core.jpa.entities.ProductOnOrder</class>
+        <class>si.fri.demo.is.core.jpa.entities.User</class>
+
+    </persistence-unit>
+</persistence>

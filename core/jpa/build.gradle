@@ -1,0 +1,146 @@
+buildscript {
+    repositories {
+        mavenCentral()
+    }
+    dependencies {
+        classpath('org.liquibase:liquibase-gradle-plugin:1.2.4') {
+            exclude(module: 'liquibase-core')
+        }
+        classpath('org.liquibase:liquibase-core:3.5.3')
+        classpath('org.postgresql:postgresql:42.0.0')
+    }
+}
+
+apply plugin: 'org.liquibase.gradle'
+
+apply plugin: 'java'
+apply plugin: 'idea'
+
+
+group 'si.fri.demo.is'
+version '1.0-SNAPSHOT'
+sourceCompatibility = 1.8
+
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    compile group: 'javax', name: 'javaee-api'
+    compile group: 'com.fasterxml.jackson.core', name: 'jackson-annotations'
+
+    testCompile group: 'junit', name: 'junit'
+}
+
+ext {
+    database_name = 'is'
+
+    liquibase_driver = 'org.postgresql.Driver'
+    liquibase_dir = '/src/main/resources/liquibase'
+    liquibase_postgres_url = 'jdbc:postgresql://localhost:5432/'
+
+    liquibase_database_name = ext.database_name
+    liquibase_database_username = 'postgres'
+    liquibase_database_password = 'root'
+
+    liquibase_diff_database_name = ext.database_name +'_diff'
+    liquibase_diff_database_username = ext.liquibase_database_username
+    liquibase_diff_database_password = ext.liquibase_database_password
+
+    liquibase_test_database_name = ext.database_name + '_test'
+    liquibase_test_database_username = ext.liquibase_database_username
+    liquibase_test_database_password = ext.liquibase_database_password
+}
+
+if(!ext.has("runList")){
+    ext.runList = 'mainAct'
+}
+
+liquibase {
+    activities {
+        mainAct {
+            driver project.liquibase_driver
+            changeLogFile projectDir.path + project.liquibase_dir + '/changelogs.groovy'
+            url project.ext.liquibase_postgres_url + project.liquibase_database_name
+            username project.liquibase_database_username
+            password project.liquibase_database_password
+        }
+        genAct {
+            driver project.liquibase_driver
+            changeLogFile projectDir.path + project.liquibase_dir + '/changelogs-generate.groovy'
+            url project.liquibase_postgres_url + project.liquibase_database_name
+            username project.liquibase_database_username
+            password project.liquibase_database_password
+        }
+        diffAct {
+            driver project.liquibase_driver
+            changeLogFile projectDir.path + project.liquibase_dir + '/changelogs.groovy'
+            url project.liquibase_postgres_url + project.liquibase_diff_database_name
+            username project.liquibase_diff_database_username
+            password project.liquibase_diff_database_password
+        }
+        genDiffAct {
+            driver project.liquibase_driver
+            changeLogFile projectDir.path + project.liquibase_dir + '/changelog-diff.groovy'
+            url project.liquibase_postgres_url + project.liquibase_database_name
+            username project.liquibase_database_username
+            password project.liquibase_database_password
+            referenceUrl project.liquibase_postgres_url + project.liquibase_diff_database_name
+            referenceUsername project.liquibase_diff_database_username
+            referencePassword project.liquibase_diff_database_password
+        }
+        testAct {
+            driver project.liquibase_driver
+            changeLogFile projectDir.path + project.liquibase_dir + '/changelogs.groovy'
+            url project.liquibase_postgres_url + project.liquibase_test_database_name
+            username project.liquibase_test_database_username
+            password project.liquibase_test_database_password
+        }
+        testImpAct {
+            driver project.liquibase_driver
+            changeLogFile projectDir.path + project.liquibase_dir + '/changelog-sql.groovy'
+            url project.liquibase_postgres_url + project.liquibase_test_database_name
+            username project.liquibase_test_database_username
+            password project.liquibase_test_database_password
+        }
+    }
+    runList = project.ext.runList
+}
+
+task setRunMainAct { doFirst{ project.ext.runList = 'mainAct' } }
+task setRunTestAct { doFirst { project.liquibase.runList = 'testAct' } }
+task setRunTestImpAct { doFirst { project.liquibase.runList = 'testImpAct' } }
+task setRunGenDiffAct { doFirst { project.liquibase.runList = 'genDiffAct' } }
+
+task deleteDiffChangeLog(type: Delete) {
+    delete project.projectDir.path + '/src/main/resources/liquibase/changelog-diff.groovy'
+}
+
+task genDiff {
+    dependsOn deleteDiffChangeLog
+    dependsOn setRunGenDiffAct
+    dependsOn liquibaseDiffChangeLog
+    deleteDiffChangeLog.finalizedBy setRunGenDiffAct
+    setRunGenDiffAct.finalizedBy liquibaseDiffChangeLog
+}
+
+task testDropAll {
+    dependsOn setRunTestAct
+    dependsOn liquibaseDropAll
+    setRunTestAct.finalizedBy liquibaseDropAll
+}
+
+task testImport {
+    dependsOn testDropAll
+    dependsOn setRunTestImpAct
+    dependsOn liquibaseUpdate
+    testDropAll.finalizedBy setRunTestImpAct
+    setRunTestImpAct.finalizedBy liquibaseUpdate
+}
+
+task testInit {
+    dependsOn testImport
+    dependsOn setRunMainAct
+    testImport.finalizedBy setRunMainAct
+}

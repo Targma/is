@@ -1,0 +1,90 @@
+group 'si.fri.demo.is'
+version '1.0-SNAPSHOT'
+
+apply plugin: 'idea'
+apply plugin: 'ear'
+apply plugin: 'java'
+
+sourceCompatibility = 1.8
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+
+    earlib (project(path: ':app:server:ejb', configuration: 'compile')){
+        exclude group: 'javax', module: 'javaee-api'
+    }
+
+    deploy project(path: ':app:server:ejb', configuration: 'archives')
+    deploy project(path: ':app:server:rest', configuration: 'archives')
+
+}
+
+
+/**
+ * Add war project providedCompile dependencies to ear lib
+ */
+HashMap<String, ProjectDependency> modules = new HashMap<>()
+
+configurations.deploy.allDependencies.forEach({ e ->
+    if(e instanceof ProjectDependency) {
+        modules.put(e.dependencyProject.name, e)
+    }
+})
+
+configurations.deploy.allDependencies.forEach({e ->
+    if(e instanceof  ProjectDependency){
+        def projectPath = e.dependencyProject.path
+        evaluationDependsOn(projectPath)
+        Project project = findProject(projectPath)
+
+        if(project.plugins.hasPlugin("war")){
+            project.configurations.providedCompile.allDependencies.forEach {
+                boolean isEarModule = false
+
+                if(it instanceof ProjectDependency){
+                    String dependencyName = (it as ProjectDependency).dependencyProject.name
+                    isEarModule = modules.containsKey(dependencyName)
+                }
+
+                if (!isEarModule) {
+                    dependencies.add('earlib', it)
+                }
+            }
+        }
+    }
+})
+
+
+/**
+ * Ear deployment configuration
+ */
+ext {
+    warArchive = 'rest-1.0-SNAPSHOT.war'
+    ejbArchive = 'ejb-1.0-SNAPSHOT.jar'
+}
+
+evaluationDependsOn(":app:server:rest")
+ext.warContextRoot = project(":app:server:rest").warContextRoot
+
+ear {
+    appDirName 'src/main/app'
+    libDirName 'APP-INF/lib'
+    deploymentDescriptor {
+        version = "1"
+        applicationName = "IS"
+        initializeInOrder = true
+        displayName = "IS Ear"
+        description = "Demo project"
+        module(project.ejbArchive, "ejb")
+        webModule(project.warArchive, project.warContextRoot)
+        securityRole "ADMINISTRATOR"
+        securityRole "CUSTOMER"
+    }
+}
+
+
+
+

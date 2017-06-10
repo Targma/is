@@ -1,0 +1,64 @@
+group 'si.fri.demo.is'
+version '1.0-SNAPSHOT'
+
+apply plugin: 'java'
+apply plugin: 'idea'
+
+sourceCompatibility = 1.8
+
+repositories {
+    mavenCentral()
+
+    maven {
+        url 'https://repo.gradle.org/gradle/libs-releases'
+    }
+}
+
+dependencies {
+
+    testCompile project(':api')
+
+    testCompile group: 'junit', name: 'junit'
+
+    testCompile 'org.jboss.shrinkwrap.resolver:shrinkwrap-resolver-bom:2.2.6'
+    testCompile 'org.jboss.shrinkwrap.resolver:shrinkwrap-resolver-depchain:2.2.6'
+    testCompile 'org.jboss.shrinkwrap.resolver:shrinkwrap-resolver-gradle-depchain:2.2.6'
+
+    testCompile 'org.jboss.arquillian:arquillian-bom:1.1.13.Final'
+    testCompile 'org.jboss.arquillian.junit:arquillian-junit-container:1.1.13.Final'
+
+    testCompile "org.wildfly.arquillian:wildfly-arquillian-container-embedded:2.0.2.Final"
+
+}
+
+/**
+ * Ear testing configuration
+ */
+ext {
+    jbossHome = 'C:/Users/Targma/Servers/wildfly-10.0.0.Final'
+}
+
+def setProperties() {
+    evaluationDependsOn(":app:server:rest")
+    def warProject = project(":app:server:rest")
+    ext.contextRoot = warProject.warContextRoot
+
+    evaluationDependsOn(":app:server:ear")
+    def earProject = project(":app:server:ear")
+    ext.earPath = earProject.buildDir.path + '/libs/' + 'ear-1.0-SNAPSHOT.ear'
+}
+
+setProperties()
+
+tasks.test.dependsOn(':app:server:ear:build')
+
+test {
+    environment 'JBOSS_HOME', project.jbossHome
+
+    systemProperty 'ear.path', project.earPath
+    systemProperty 'deployment.contextRoot', project.contextRoot
+
+    systemProperty 'java.util.logging.manager', 'org.jboss.logmanager.LogManager'
+    systemProperty 'jboss.server.default.config', 'standalone-full.xml'
+    systemProperty 'modulePath', project.jbossHome + '/modules'
+}

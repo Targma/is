@@ -1,0 +1,35 @@
+package si.fri.demo.is.app.server.rest.providers.exceptions;
+
+import javax.ejb.EJBTransactionRolledbackException;
+import javax.servlet.http.HttpServletRequest;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.ext.ExceptionMapper;
+import javax.ws.rs.ext.Provider;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+@Provider
+public class EJBTransactionRolledbackExceptionMapper implements ExceptionMapper<EJBTransactionRolledbackException> {
+
+    static final Logger LOG = Logger.getLogger(EJBTransactionRolledbackExceptionMapper.class.getSimpleName());
+
+    @Context
+    protected HttpServletRequest httpServletRequest;
+
+    private String toJson(EJBTransactionRolledbackException e) {
+        StringBuilder sb = new StringBuilder("{");
+        sb.append("\"message\":\"" + e.getMessage() + "\"");
+
+        if(e != null)
+            sb.append(",\"exception\":\"" + e.toString() + "\"");
+
+        return sb.append("}").toString();
+    }
+
+    @Override
+    public Response toResponse(EJBTransactionRolledbackException e) {
+        LOG.log(Level.SEVERE, String.format("[%s][%s][%s}", "OptimisticLockException", httpServletRequest.getRequestURI(), httpServletRequest.getRemoteAddr()), e);
+        return Response.status(Response.Status.BAD_REQUEST).entity(toJson(e)).build();
+    }
+}

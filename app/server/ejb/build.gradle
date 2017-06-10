@@ -1,0 +1,17 @@
+group 'si.fri.demo.is'
+version '1.0-SNAPSHOT'
+
+apply plugin: 'idea'
+apply plugin: 'java'
+
+sourceCompatibility = 1.8
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    compile project(':core:businessLogic')
+
+    testCompile group: 'junit', name: 'junit'
+}
