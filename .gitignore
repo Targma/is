@@ -4,13 +4,6 @@
 ## VCG
 *.backup
 
-Vcg Files/vcg/server/cert/95181768-2.p12
-Vcg Files/vcg/gui/vcgCurl.jar
-Vcg Files/vcg/gui/vcgGui.jar
-Vcg Files/vcg/gui/log.txt
-Vcg Files/vcg/gui/temp/*
-Vcg Files/vcg/diffSync/changelog/diff-*
-
 Vcg Files/vcg/server/seed/seedVcgDatabase.sql
 **/build/**
 *.class
