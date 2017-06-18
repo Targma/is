@@ -4,15 +4,19 @@ import com.github.tfaga.lynx.beans.QueryFilter;
 import com.github.tfaga.lynx.beans.QueryParameters;
 import com.github.tfaga.lynx.enums.FilterOperation;
 import io.swagger.annotations.*;
+import si.fri.demo.is.app.server.ejb.database.DatabaseServiceLocal;
 import si.fri.demo.is.app.server.ejb.interfaces.OrderServiceLocal;
-import si.fri.demo.is.app.server.rest.providers.exceptions.ApiException;
-import si.fri.demo.is.app.server.rest.resources.base.GetResource;
-import si.fri.demo.is.app.server.rest.utility.QueryParamatersUtility;
-import si.fri.demo.is.app.server.rest.utility.SwaggerConstants;
+import si.fri.demo.is.app.server.rest.resources.utility.AuthUtility;
+import si.fri.demo.is.core.businessLogic.authentication.AuthEntity;
 import si.fri.demo.is.core.businessLogic.database.AuthorizationManager;
 import si.fri.demo.is.core.businessLogic.database.Database;
+import si.fri.demo.is.core.businessLogic.database.DatabaseImpl;
 import si.fri.demo.is.core.businessLogic.exceptions.BusinessLogicTransactionException;
 import si.fri.demo.is.core.jpa.entities.Order;
+import si.fri.demo.is.core.restComponents.providers.exceptions.ApiException;
+import si.fri.demo.is.core.restComponents.resource.GetResource;
+import si.fri.demo.is.core.restComponents.utility.QueryParamatersUtility;
+import si.fri.demo.is.core.restComponents.utility.SwaggerConstants;
 
 import javax.annotation.security.RolesAllowed;
 import javax.ejb.EJB;
@@ -28,7 +32,20 @@ import javax.ws.rs.core.Response;
 public class OrderResource extends GetResource<Order> {
 
     @EJB
+    private DatabaseServiceLocal databaseImpl;
+
+    @Override
+    protected DatabaseImpl getDatabaseService() {
+        return databaseImpl;
+    }
+
+    protected AuthEntity getAuthorizedEntity() {
+        return AuthUtility.getAuthorizedEntity(sc.getUserPrincipal());
+    }
+
+    @EJB
     private OrderServiceLocal orderService;
+
 
     public OrderResource() {
         super(Order.class);

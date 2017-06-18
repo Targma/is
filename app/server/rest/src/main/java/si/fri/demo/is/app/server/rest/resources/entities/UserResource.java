@@ -1,15 +1,19 @@
 package si.fri.demo.is.app.server.rest.resources.entities;
 
 import io.swagger.annotations.*;
+import si.fri.demo.is.app.server.ejb.database.DatabaseServiceLocal;
 import si.fri.demo.is.app.server.ejb.interfaces.UserServiceLocal;
-import si.fri.demo.is.app.server.rest.providers.configuration.PATCH;
-import si.fri.demo.is.app.server.rest.providers.exceptions.ApiException;
-import si.fri.demo.is.app.server.rest.resources.base.CrudResource;
-import si.fri.demo.is.app.server.rest.utility.SwaggerConstants;
+import si.fri.demo.is.app.server.rest.resources.utility.AuthUtility;
+import si.fri.demo.is.core.businessLogic.authentication.AuthEntity;
 import si.fri.demo.is.core.businessLogic.database.AuthorizationManager;
 import si.fri.demo.is.core.businessLogic.database.Database;
+import si.fri.demo.is.core.businessLogic.database.DatabaseImpl;
 import si.fri.demo.is.core.businessLogic.exceptions.BusinessLogicTransactionException;
 import si.fri.demo.is.core.jpa.entities.User;
+import si.fri.demo.is.core.restComponents.providers.configuration.PATCH;
+import si.fri.demo.is.core.restComponents.providers.exceptions.ApiException;
+import si.fri.demo.is.core.restComponents.resource.CrudResource;
+import si.fri.demo.is.core.restComponents.utility.SwaggerConstants;
 
 import javax.annotation.security.RolesAllowed;
 import javax.ejb.EJB;
@@ -25,18 +29,33 @@ import javax.ws.rs.core.Response;
 public class UserResource extends CrudResource<User> {
 
     @EJB
+    private DatabaseServiceLocal databaseImpl;
+
+    @Override
+    protected DatabaseImpl getDatabaseService() {
+        return databaseImpl;
+    }
+
+    protected AuthEntity getAuthorizedEntity() {
+        return AuthUtility.getAuthorizedEntity(sc.getUserPrincipal());
+    }
+
+
+    @EJB
     private UserServiceLocal userService;
 
     public UserResource() {
         super(User.class);
     }
 
+
+
     @RolesAllowed(ROLE_ADMINISTRATOR)
     @GET
     @Path("login")
     public Response loginUserInfo() throws BusinessLogicTransactionException {
         User user = userService.get(getAuthorizedEntity());
-        return buildResponse(user, false, true);
+        return buildResponse(user, true, true);
     }
 
 

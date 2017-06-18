@@ -1,21 +1,10 @@
-group 'si.fri.demo.is'
-version '1.0-SNAPSHOT'
-
-apply plugin: 'idea'
-apply plugin: 'java'
 apply plugin: 'war'
-
-sourceCompatibility = 1.8
-
-repositories {
-    mavenCentral()
-}
 
 dependencies {
     providedCompile project(':app:server:ejb')
+    providedCompile project(':core:restComponents')
 
-    providedCompile group: 'io.swagger', name: 'swagger-jaxrs'
-    providedCompile group: 'com.fasterxml.jackson.datatype', name: 'jackson-datatype-hibernate4'
+    providedCompile group: 'org.keycloak', name: 'keycloak-core'
 
     testCompile group: 'junit', name: 'junit'
 }

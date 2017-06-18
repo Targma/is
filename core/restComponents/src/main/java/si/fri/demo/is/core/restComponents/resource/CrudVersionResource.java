@@ -1,8 +1,8 @@
-package si.fri.demo.is.app.server.rest.resources.base;
+package si.fri.demo.is.core.restComponents.resource;
 
-import si.fri.demo.is.app.server.rest.providers.configuration.PATCH;
 import si.fri.demo.is.core.businessLogic.exceptions.BusinessLogicTransactionException;
 import si.fri.demo.is.core.jpa.entities.base.BaseEntityVersion;
+import si.fri.demo.is.core.restComponents.providers.configuration.PATCH;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.Response;
@@ -17,7 +17,7 @@ public abstract class CrudVersionResource<T extends BaseEntityVersion> extends G
     public Response create(@HeaderParam("X-Content") Boolean xContent, T entity) throws BusinessLogicTransactionException {
         entity.setId(null);
 
-        T dbEntity = databaseService.createVersion(entity, authorizationManager, validationManager);
+        T dbEntity = getDatabaseService().createVersion(entity, authorizationManager, validationManager);
 
         return buildResponse(dbEntity, xContent, true, Response.Status.CREATED);
     }
@@ -28,7 +28,7 @@ public abstract class CrudVersionResource<T extends BaseEntityVersion> extends G
                            @PathParam("id") Integer id, T entity) throws BusinessLogicTransactionException {
         entity.setId(id);
 
-        T dbEntity = databaseService.updateVersion(id, entity, authorizationManager, validationManager);
+        T dbEntity = getDatabaseService().updateVersion(id, entity, authorizationManager, validationManager);
 
         return buildResponse(dbEntity, xContent, true, Response.Status.CREATED);
     }
@@ -39,7 +39,7 @@ public abstract class CrudVersionResource<T extends BaseEntityVersion> extends G
                           @PathParam("id") Integer id, T entity) throws BusinessLogicTransactionException {
         entity.setId(id);
 
-        T dbEntity = databaseService.patchVersion(id, entity, authorizationManager, validationManager);
+        T dbEntity = getDatabaseService().patchVersion(id, entity, authorizationManager, validationManager);
 
         return buildResponse(dbEntity, xContent, true, Response.Status.CREATED);
     }
@@ -49,7 +49,7 @@ public abstract class CrudVersionResource<T extends BaseEntityVersion> extends G
     public Response delete(@HeaderParam("X-Content") Boolean xContent,
                            @PathParam("id") Integer id) throws BusinessLogicTransactionException {
 
-        T dbEntity = databaseService.delete(type, id, authorizationManager, validationManager);
+        T dbEntity = getDatabaseService().delete(type, id, authorizationManager, validationManager);
 
         return buildResponse(dbEntity, xContent);
     }
@@ -59,7 +59,7 @@ public abstract class CrudVersionResource<T extends BaseEntityVersion> extends G
     public Response toggleIsDeleted(@HeaderParam("X-Content") Boolean xContent,
                                     @PathParam("id") Integer id) throws BusinessLogicTransactionException {
 
-        T dbEntity = databaseService.toggleIsDeleted(type, id, authorizationManager, validationManager);
+        T dbEntity = getDatabaseService().toggleIsDeleted(type, id, authorizationManager, validationManager);
 
         return buildResponse(dbEntity, xContent);
     }

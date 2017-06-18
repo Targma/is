@@ -13,18 +13,6 @@ buildscript {
 
 apply plugin: 'org.liquibase.gradle'
 
-apply plugin: 'java'
-apply plugin: 'idea'
-
-
-group 'si.fri.demo.is'
-version '1.0-SNAPSHOT'
-sourceCompatibility = 1.8
-
-
-repositories {
-    mavenCentral()
-}
 
 dependencies {
     compile group: 'javax', name: 'javaee-api'
@@ -135,13 +123,19 @@ task testInit {
     liquibaseDropAll.finalizedBy liquibaseUpdate
 }
 
+task testTest {
+    liquibaseDropAll
+}
+
 task testImport {
     dependsOn setRunTestImpAct
     dependsOn liquibaseUpdate
     setRunTestImpAct.finalizedBy liquibaseUpdate
 }
 
-
+/*
+ * Task to create database in postgresql
+ */
 String getCreateDatabaseCommand(String db){
     return 'psql -U postgres -tc "SELECT 1 FROM pg_database WHERE datname = \'' + db + '\'" | grep -q 1 || psql -U postgres -c "CREATE DATABASE ' + db + '"'
 }

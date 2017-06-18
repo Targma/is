@@ -11,16 +11,20 @@ buildscript {
     }
 }
 
-group 'si.fri.demo.is'
-version '1.0-SNAPSHOT'
-
-apply plugin: 'java'
-apply plugin: 'idea'
-
-sourceCompatibility = 1.8
-
-subprojects {
+allprojects {
     apply plugin: "io.spring.dependency-management"
+
+    group 'si.fri.demo.is'
+    version '1.0-SNAPSHOT'
+
+    apply plugin: 'java'
+    apply plugin: 'idea'
+
+    sourceCompatibility = 1.8
+
+    repositories {
+        mavenCentral()
+    }
 
     dependencyManagement {
         dependencies {

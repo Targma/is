@@ -19,7 +19,7 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-public class Database {
+public class Database implements DatabaseImpl {
     private static final Logger LOG = Logger.getLogger(Database.class.getSimpleName());
 
     protected EntityManager entityManager;

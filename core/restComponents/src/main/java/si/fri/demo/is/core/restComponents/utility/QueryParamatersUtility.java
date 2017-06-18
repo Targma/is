@@ -1,4 +1,4 @@
-package si.fri.demo.is.app.server.rest.utility;
+package si.fri.demo.is.core.restComponents.utility;
 
 import com.github.tfaga.lynx.beans.QueryFilter;
 

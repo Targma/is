@@ -34,14 +34,9 @@ public class DatabaseService implements DatabaseServiceLocal {
 
     private Database database;
 
-    //@TransactionAttribute(value = TransactionAttributeType.REQUIRES_NEW)
     @PostConstruct
     private void init(){
         this.database = new Database(em);
-    }
-
-    public Database getDatabase() {
-        return database;
     }
 
     @Override
@@ -122,5 +117,10 @@ public class DatabaseService implements DatabaseServiceLocal {
     @Override
     public User getAuthorizedUser(AuthEntity authEntity) throws BusinessLogicTransactionException {
         return database.getAuthorizedUser(authEntity);
+    }
+
+    @Override
+    public Database getDatabase() {
+        return database;
     }
 }

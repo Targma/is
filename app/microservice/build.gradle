@@ -1,18 +1,5 @@
-group 'si.fri.demo.is'
-version '1.0-SNAPSHOT'
-
-apply plugin: 'java'
-apply plugin: 'idea'
-
-
-sourceCompatibility = 1.8
-
-repositories {
-    mavenCentral()
-}
-
 dependencies {
-    compile project(':core:businessLogic')
+    compile project(':core:restComponents')
 
     compile group: "com.kumuluz.ee", name: 'kumuluzee-core'
     compile group: "com.kumuluz.ee", name: 'kumuluzee-servlet-jetty'

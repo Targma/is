@@ -1,21 +1,13 @@
-group 'si.fri.demo.is'
-version '1.0-SNAPSHOT'
-
-apply plugin: 'idea'
 apply plugin: 'ear'
-apply plugin: 'java'
-
-sourceCompatibility = 1.8
-
-repositories {
-    mavenCentral()
-}
 
 dependencies {
 
     earlib (project(path: ':app:server:ejb', configuration: 'compile')){
         exclude group: 'javax', module: 'javaee-api'
         exclude group: 'org.keycloak', module: 'keycloak-core'
+    }
+    earlib (project(path: ':core:restComponents', configuration: 'compile')){
+        exclude group: 'javax', module: 'javaee-api'
     }
 
     deploy project(path: ':app:server:ejb', configuration: 'archives')
@@ -73,11 +65,6 @@ def setProperties() {
     ext.ejbArchive = ejbProject.name + "-" + ((String)ejbProject.version) + ".jar"
 }
 setProperties()
-
-/*ext {
-    warArchive = 'rest-1.0-SNAPSHOT.war'
-    ejbArchive = 'ejb-1.0-SNAPSHOT.jar'
-}*/
 
 ear {
     appDirName 'src/main/app'

@@ -1,4 +1,4 @@
-package si.fri.demo.is.app.server.rest.resources.base;
+package si.fri.demo.is.core.restComponents.resource;
 
 import com.github.tfaga.lynx.beans.QueryParameters;
 import io.swagger.annotations.ApiImplicitParam;
@@ -47,7 +47,7 @@ public abstract class GetResource<T extends BaseEntity> extends BaseResource {
         QueryParameters param = QueryParameters.query(uriInfo.getRequestUri().getQuery())
                 .maxLimit(defaultMaxLimit).defaultLimit(defaultMaxLimit).defaultOffset(0).build();
 
-        Paging<T> paging = databaseService.get(type, param, authorizationManager);
+        Paging<T> paging = getDatabaseService().get(type, param, authorizationManager);
 
         return buildResponse(paging);
     }
@@ -57,11 +57,10 @@ public abstract class GetResource<T extends BaseEntity> extends BaseResource {
     @Path("{id}")
     public Response get(@PathParam("id") Integer id) throws BusinessLogicTransactionException {
 
-        T dbEntity = databaseService.get(type, id, authorizationManager);
+        T dbEntity = getDatabaseService().get(type, id, authorizationManager);
 
         return buildResponse(dbEntity, true, false);
     }
-
 
 
     protected Response buildResponse(T dbEntity) {
