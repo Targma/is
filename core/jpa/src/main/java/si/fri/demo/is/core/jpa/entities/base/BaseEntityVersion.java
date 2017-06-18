@@ -7,7 +7,7 @@ import javax.persistence.MappedSuperclass;
 import java.lang.reflect.Field;
 
 @MappedSuperclass
-public abstract class BaseEntityVersion<T> extends BaseEntity<T> {
+public abstract class BaseEntityVersion<T extends BaseEntityVersion> extends BaseEntity<T> {
 
     @Column(name = "origin_id")
     protected Integer originId;
@@ -42,36 +42,20 @@ public abstract class BaseEntityVersion<T> extends BaseEntity<T> {
     }
 
     @JsonIgnore
-    private boolean versionBaseSkip(Field field){
-        switch (field.getName()){
-            case "originId":
-            case "versionOrder":
-            case "isLatest":
-                return true;
-            default:
-                return false;
-        }
-    }
-
-    @JsonIgnore
     @Override
-    protected boolean genericUpdateSkip(Field field){
-        boolean skip = super.genericUpdateSkip(field);
-        if(skip){
-            return true;
+    protected boolean baseSkip(Field field){
+        boolean skip = super.baseSkip(field);
+        if(skip) {
+            return skip;
         } else {
-            return versionBaseSkip(field);
-        }
-    }
-
-    @JsonIgnore
-    @Override
-    protected boolean genericPatchSkip(Field field){
-        boolean skip = super.genericPatchSkip(field);
-        if(skip){
-            return true;
-        } else {
-            return versionBaseSkip(field);
+            switch (field.getName()){
+                case "originId":
+                case "versionOrder":
+                case "isLatest":
+                    return true;
+                default:
+                    return false;
+            }
         }
     }
 

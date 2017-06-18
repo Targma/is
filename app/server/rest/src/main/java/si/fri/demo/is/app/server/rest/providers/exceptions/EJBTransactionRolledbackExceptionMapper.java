@@ -17,19 +17,9 @@ public class EJBTransactionRolledbackExceptionMapper implements ExceptionMapper<
     @Context
     protected HttpServletRequest httpServletRequest;
 
-    private String toJson(EJBTransactionRolledbackException e) {
-        StringBuilder sb = new StringBuilder("{");
-        sb.append("\"message\":\"" + e.getMessage() + "\"");
-
-        if(e != null)
-            sb.append(",\"exception\":\"" + e.toString() + "\"");
-
-        return sb.append("}").toString();
-    }
-
     @Override
     public Response toResponse(EJBTransactionRolledbackException e) {
         LOG.log(Level.SEVERE, String.format("[%s][%s][%s}", "OptimisticLockException", httpServletRequest.getRequestURI(), httpServletRequest.getRemoteAddr()), e);
-        return Response.status(Response.Status.BAD_REQUEST).entity(toJson(e)).build();
+        return Response.status(Response.Status.BAD_REQUEST).entity(ApiException.build(e.getMessage(), e)).build();
     }
 }

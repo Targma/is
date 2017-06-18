@@ -10,6 +10,7 @@ import java.math.BigDecimal;
 
 @Entity
 @Table(name="product_on_order")
+@Cacheable(true)
 @JsonIdentityInfo(generator=ObjectIdGenerators.IntSequenceGenerator.class)
 public class ProductOnOrder extends BaseEntity<ProductOnOrder> {
 

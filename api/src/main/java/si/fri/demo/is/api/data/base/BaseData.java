@@ -1,13 +1,14 @@
 package si.fri.demo.is.api.data.base;
 
-import si.fri.demo.is.api.exception.ISApiException;
+import si.fri.demo.is.api.data.RequestException;
 
 import javax.ws.rs.core.Response;
 
 public abstract class BaseData {
 
     protected Response.Status status;
-    protected ISApiException isApiException;
+    protected RequestException isApiException;
+
 
     public BaseData(Response.Status status) {
         this.status = status;
@@ -32,11 +33,11 @@ public abstract class BaseData {
         }
     }
 
-    public ISApiException getIsApiException() {
+    public RequestException getIsApiException() {
         return isApiException;
     }
 
-    public void setIsApiException(ISApiException isApiException) {
+    public void setIsApiException(RequestException isApiException) {
         this.isApiException = isApiException;
     }
 }

@@ -7,7 +7,7 @@
              version="2.1">
 
     <persistence-unit name="is-jpa">
-        <jta-data-source>java:/jboss/datasources/ISDS-diff</jta-data-source>
+        <jta-data-source>java:/jboss/datasources/ISDS</jta-data-source>
 
         <!--
         <jta-data-source>java:/jboss/datasources/ISDS</jta-data-source>
@@ -20,18 +20,25 @@
         <class>si.fri.demo.is.core.jpa.entities.Customer</class>
         <class>si.fri.demo.is.core.jpa.entities.ProductOnOrder</class>
         <class>si.fri.demo.is.core.jpa.entities.User</class>
+        <class>si.fri.demo.is.core.jpa.entities.Address</class>
 
+        <shared-cache-mode>ENABLE_SELECTIVE</shared-cache-mode>
         <properties>
-
-            <property name="javax.persistence.schema-generation.database.action" value="drop-and-create"/>
+            <property name="hibernate.cache.use_second_level_cache" value="true"/>
+            <property name="hibernate.cache.use_query_cache" value="true" />
 
             <!--
             <property name="javax.persistence.schema-generation.database.action" value="drop-and-create"/>
             <property name="javax.persistence.sql-load-script-source" value="C:/vcg/server/seed/seedVcgDatabase.sql"/>
-
             <property name="javax.persistence.schema-generation.database.action" value="create"/>
             <property name="javax.persistence.schema-generation.create-source" value="metadata"/>
             <property name="javax.persistence.schema-generation.drop-source" value="metadata"/>
+
+
+            // spy property in standalone
+            <property name="hibernate.show_sql" value="false" />
+            <property name="hibernate.format_sql" value="false" />
+            <property name="hibernate.use_sql_comments" value="false" />
             -->
 
         </properties>

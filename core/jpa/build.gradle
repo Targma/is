@@ -36,6 +36,8 @@ dependencies {
 ext {
     database_name = 'is'
 
+    database_bin = 'C:/Program Files/PostgreSQL/9.6/bin/'
+
     liquibase_driver = 'org.postgresql.Driver'
     liquibase_dir = '/src/main/resources/liquibase'
     liquibase_postgres_url = 'jdbc:postgresql://localhost:5432/'
@@ -125,22 +127,42 @@ task genDiff {
     setRunGenDiffAct.finalizedBy liquibaseDiffChangeLog
 }
 
-task testDropAll {
+task testInit {
     dependsOn setRunTestAct
     dependsOn liquibaseDropAll
+    dependsOn liquibaseUpdate
     setRunTestAct.finalizedBy liquibaseDropAll
+    liquibaseDropAll.finalizedBy liquibaseUpdate
 }
 
 task testImport {
-    dependsOn testDropAll
     dependsOn setRunTestImpAct
     dependsOn liquibaseUpdate
-    testDropAll.finalizedBy setRunTestImpAct
     setRunTestImpAct.finalizedBy liquibaseUpdate
 }
 
-task testInit {
-    dependsOn testImport
-    dependsOn setRunMainAct
-    testImport.finalizedBy setRunMainAct
+
+String getCreateDatabaseCommand(String db){
+    return 'psql -U postgres -tc "SELECT 1 FROM pg_database WHERE datname = \'' + db + '\'" | grep -q 1 || psql -U postgres -c "CREATE DATABASE ' + db + '"'
+}
+
+task initMainDatabase(type:Exec) {
+    workingDir project.database_bin
+    commandLine 'cmd', '/c', getCreateDatabaseCommand(project.liquibase_database_name)
+}
+
+task initDiffDatabase(type:Exec) {
+    workingDir project.database_bin
+    commandLine 'cmd', '/c', getCreateDatabaseCommand(project.liquibase_database_name)
+}
+
+task initTestDatabase(type:Exec) {
+    workingDir project.database_bin
+    commandLine 'cmd', '/c', getCreateDatabaseCommand(project.liquibase_database_name)
+}
+
+task initAllDatabases() {
+    dependsOn initMainDatabase
+    dependsOn initDiffDatabase
+    dependsOn initTestDatabase
 }

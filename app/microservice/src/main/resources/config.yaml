@@ -1,0 +1,7 @@
+kumuluzee:
+  datasources:
+    - jndi-name: jdbc/ISDS
+      connection-url: jdbc:postgresql://localhost:5432/is
+      username: postgres
+      password: root
+      max-pool-size: 10

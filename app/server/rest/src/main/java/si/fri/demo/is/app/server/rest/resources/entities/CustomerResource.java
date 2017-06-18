@@ -1,19 +1,30 @@
 package si.fri.demo.is.app.server.rest.resources.entities;
 
+import com.github.tfaga.lynx.beans.QueryFilter;
+import com.github.tfaga.lynx.beans.QueryParameters;
+import com.github.tfaga.lynx.enums.FilterOperation;
+import io.swagger.annotations.*;
 import si.fri.demo.is.app.server.ejb.interfaces.CustomerServiceLocal;
 import si.fri.demo.is.app.server.rest.providers.configuration.PATCH;
+import si.fri.demo.is.app.server.rest.providers.exceptions.ApiException;
 import si.fri.demo.is.app.server.rest.resources.base.CrudVersionResource;
-import si.fri.demo.is.core.businessLogic.authentication.base.AuthEntity;
+import si.fri.demo.is.app.server.rest.utility.QueryParamatersUtility;
+import si.fri.demo.is.app.server.rest.utility.SwaggerConstants;
+import si.fri.demo.is.core.businessLogic.database.AuthorizationManager;
+import si.fri.demo.is.core.businessLogic.database.Database;
 import si.fri.demo.is.core.businessLogic.exceptions.BusinessLogicTransactionException;
 import si.fri.demo.is.core.jpa.entities.Customer;
+import si.fri.demo.is.core.jpa.entities.User;
 
 import javax.annotation.security.RolesAllowed;
 import javax.ejb.EJB;
 import javax.enterprise.context.RequestScoped;
+import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.*;
 import javax.ws.rs.core.Response;
-import java.security.Principal;
 
+
+@Api(value = "Customer")
 @Path("Customer")
 @RequestScoped
 public class CustomerResource extends CrudVersionResource<Customer> {
@@ -29,71 +40,234 @@ public class CustomerResource extends CrudVersionResource<Customer> {
     @GET
     @Path("login")
     public Response loginUserInfo() throws BusinessLogicTransactionException {
-        Principal principal = sc.getUserPrincipal();
-        AuthEntity authEntity = authProvider.generateAuthEntity(principal);
-        Customer customer = customerService.get(authEntity);
-        return Response.ok(customer).build();
+        Customer customer = customerService.get(getAuthorizedEntity());
+        return buildResponse(customer, false, true);
     }
 
-    @RolesAllowed(ROLE_CUSTOMER)
-    @PUT
-    @Path("{id}")
-    @Override
-    public Response update(Integer id, Customer newObject) throws BusinessLogicTransactionException {
-        return super.update(id, newObject);
-    }
 
-    @RolesAllowed(ROLE_CUSTOMER)
-    @PATCH
-    @Path("{id}")
-    @Override
-    public Response patch(Integer id, Customer newObject) throws BusinessLogicTransactionException {
-        return super.patch(id, newObject);
-    }
-
-    @RolesAllowed(ROLE_ADMINISTRATOR)
+    @ApiOperation(
+            value = SwaggerConstants.GET_LIST_VALUE + "users.",
+            notes = SwaggerConstants.GET_LIST_NOTE,
+            authorizations = {
+                    @Authorization(
+                        value = SwaggerConstants.AUTH_VALUE,
+                        scopes = {
+                            @AuthorizationScope(
+                                scope = ROLE_ADMINISTRATOR,
+                                description = SwaggerConstants.AUTH_ROLE_ADMIN_DESC)
+                    }
+            )
+    })
+    @ApiResponses({
+            @ApiResponse(
+                    code = HttpServletResponse.SC_OK,
+                    message = SwaggerConstants.STATUS_OK_DESC,
+                    response = Customer.class,
+                    responseContainer = SwaggerConstants.GET_LIST_CONTAINER,
+                    responseHeaders = @ResponseHeader(
+                            name = SwaggerConstants.GET_LIST_HEAD_COUNT,
+                            description = SwaggerConstants.GET_LIST_HEAD_COUNT_DESC,
+                            response = Integer.class
+                    )
+            ),
+            @ApiResponse(code = HttpServletResponse.SC_BAD_REQUEST, message = SwaggerConstants.STATUS_BAD_REQUEST_DESC, response = ApiException.class),
+            @ApiResponse(code = HttpServletResponse.SC_FORBIDDEN, message = SwaggerConstants.STATUS_FORBIDDEN_DESC)
+    })
+    @RolesAllowed({ROLE_ADMINISTRATOR})
+    @GET
     @Override
     public Response getList() throws BusinessLogicTransactionException {
         return super.getList();
     }
 
-    @RolesAllowed(ROLE_ADMINISTRATOR)
+
+    @ApiOperation(
+            value = SwaggerConstants.GET_VALUE + "user.",
+            notes = SwaggerConstants.GET_NOTE,
+            authorizations = { @Authorization(
+                    value = SwaggerConstants.AUTH_VALUE,
+                    scopes = {
+                            @AuthorizationScope(
+                                scope = ROLE_ADMINISTRATOR,
+                                description = SwaggerConstants.AUTH_ROLE_ADMIN_DESC),
+                            @AuthorizationScope(
+                                    scope = ROLE_CUSTOMER,
+                                    description = SwaggerConstants.AUTH_ROLE_CUSTOMER_DESC)
+                    }
+            )
+            })
+    @ApiResponses({
+            @ApiResponse(code = HttpServletResponse.SC_OK, message = SwaggerConstants.STATUS_OK_DESC, response = User.class),
+            @ApiResponse(code = HttpServletResponse.SC_NOT_FOUND, message = SwaggerConstants.STATUS_NOT_FOUND_DESC, response = User.class),
+            @ApiResponse(code = HttpServletResponse.SC_FORBIDDEN, message = SwaggerConstants.STATUS_FORBIDDEN_DESC)
+    })
+    @RolesAllowed({ROLE_ADMINISTRATOR, ROLE_CUSTOMER})
+    @GET
+    @Path("{id}")
     @Override
-    public Response get(Integer id) throws BusinessLogicTransactionException {
+    public Response get(@PathParam("id") Integer id) throws BusinessLogicTransactionException {
         return super.get(id);
     }
 
+
+    @ApiOperation(
+            value = SwaggerConstants.CREATE_VERSION_VALUE + "user.",
+            notes = SwaggerConstants.CREATE_VERSION_NOTE,
+            authorizations = {
+                    @Authorization(
+                        value = SwaggerConstants.AUTH_VALUE,
+                        scopes = {
+                            @AuthorizationScope(
+                                scope = ROLE_CUSTOMER,
+                                description = SwaggerConstants.AUTH_ROLE_CUSTOMER_DESC)
+                    }
+            )
+            })
+    @ApiResponses({
+            @ApiResponse(code = HttpServletResponse.SC_CREATED, message = SwaggerConstants.STATUS_CREATED_DESC, response = User.class),
+            @ApiResponse(code = HttpServletResponse.SC_NO_CONTENT, message = SwaggerConstants.STATUS_NO_CONTENT_DESC),
+            @ApiResponse(code = HttpServletResponse.SC_BAD_REQUEST, message = SwaggerConstants.STATUS_BAD_REQUEST_DESC, response = ApiException.class),
+            @ApiResponse(code = HttpServletResponse.SC_FORBIDDEN, message = SwaggerConstants.STATUS_FORBIDDEN_DESC)
+    })
     @RolesAllowed(ROLE_CUSTOMER)
     @POST
     @Override
-    public Response create(Customer object) throws BusinessLogicTransactionException {
+    public Response create(@HeaderParam("X-Content") Boolean xContent, Customer entity) throws BusinessLogicTransactionException {
         throw BusinessLogicTransactionException.buildNotImplemented();
     }
 
-    @RolesAllowed(ROLE_ADMINISTRATOR)
+
+    @ApiOperation(
+            value = SwaggerConstants.PUT_VERSION_VALUE + "user.",
+            notes = SwaggerConstants.PUT_VERSION_NOTE,
+            authorizations = {
+                    @Authorization(
+                        value = SwaggerConstants.AUTH_VALUE,
+                        scopes = {
+                            @AuthorizationScope(
+                                scope = ROLE_CUSTOMER,
+                                description = SwaggerConstants.AUTH_ROLE_CUSTOMER_DESC)
+                    }
+            )
+            })
+    @ApiResponses({
+            @ApiResponse(code = HttpServletResponse.SC_CREATED, message = SwaggerConstants.STATUS_CREATED_DESC, response = User.class),
+            @ApiResponse(code = HttpServletResponse.SC_NO_CONTENT, message = SwaggerConstants.STATUS_NO_CONTENT_DESC),
+            @ApiResponse(code = HttpServletResponse.SC_NOT_FOUND, message = SwaggerConstants.STATUS_NOT_FOUND_DESC, response = ApiException.class),
+            @ApiResponse(code = HttpServletResponse.SC_BAD_REQUEST, message = SwaggerConstants.STATUS_BAD_REQUEST_DESC, response = ApiException.class),
+            @ApiResponse(code = HttpServletResponse.SC_FORBIDDEN, message = SwaggerConstants.STATUS_FORBIDDEN_DESC)
+    })
+    @RolesAllowed(ROLE_CUSTOMER)
+    @PUT
+    @Path("{id}")
+    @Override
+    public Response update(@HeaderParam("X-Content") Boolean xContent, @PathParam("id") Integer id, Customer entity) throws BusinessLogicTransactionException {
+        return super.update(xContent, id, entity);
+    }
+
+
+
+    @ApiOperation(
+            value = SwaggerConstants.PATCH_VERSION_VALUE + "user.",
+            notes = SwaggerConstants.PATCH_VERSION_NOTE,
+            authorizations = {
+                    @Authorization(
+                        value = SwaggerConstants.AUTH_VALUE,
+                        scopes = {
+                            @AuthorizationScope(
+                                scope = ROLE_CUSTOMER,
+                                description = SwaggerConstants.AUTH_ROLE_CUSTOMER_DESC)
+                    }
+            )
+            })
+    @ApiResponses({
+            @ApiResponse(code = HttpServletResponse.SC_CREATED, message = SwaggerConstants.STATUS_CREATED_DESC, response = User.class),
+            @ApiResponse(code = HttpServletResponse.SC_NO_CONTENT, message = SwaggerConstants.STATUS_NO_CONTENT_DESC),
+            @ApiResponse(code = HttpServletResponse.SC_NOT_FOUND, message = SwaggerConstants.STATUS_NOT_FOUND_DESC, response = ApiException.class),
+            @ApiResponse(code = HttpServletResponse.SC_BAD_REQUEST, message = SwaggerConstants.STATUS_BAD_REQUEST_DESC, response = ApiException.class),
+            @ApiResponse(code = HttpServletResponse.SC_FORBIDDEN, message = SwaggerConstants.STATUS_FORBIDDEN_DESC)
+    })
+    @RolesAllowed(ROLE_CUSTOMER)
+    @PATCH
+    @Path("{id}")
+    @Override
+    public Response patch(@HeaderParam("X-Content") Boolean xContent, @PathParam("id") Integer id, Customer entity) throws BusinessLogicTransactionException {
+        return super.patch(xContent, id, entity);
+    }
+
+
+    @ApiOperation(
+            value = SwaggerConstants.DELETE_VERSION_VALUE + "user.",
+            notes = SwaggerConstants.DELETE_VERSION_NOTE,
+            authorizations = {
+                    @Authorization(
+                        value = SwaggerConstants.AUTH_VALUE,
+                        scopes = { @AuthorizationScope(
+                            scope = ROLE_CUSTOMER,
+                            description = SwaggerConstants.AUTH_ROLE_CUSTOMER_DESC)
+                    }
+            )
+            })
+    @ApiResponses({
+            @ApiResponse(code = HttpServletResponse.SC_OK, message = SwaggerConstants.STATUS_OK_DESC, response = User.class),
+            @ApiResponse(code = HttpServletResponse.SC_NO_CONTENT, message = SwaggerConstants.STATUS_NO_CONTENT_DESC),
+            @ApiResponse(code = HttpServletResponse.SC_NOT_FOUND, message = SwaggerConstants.STATUS_NOT_FOUND_DESC, response = ApiException.class),
+            @ApiResponse(code = HttpServletResponse.SC_FORBIDDEN, message = SwaggerConstants.STATUS_FORBIDDEN_DESC)
+    })
+    @RolesAllowed(ROLE_CUSTOMER)
     @DELETE
     @Path("{id}")
     @Override
-    public Response delete(Integer id) throws BusinessLogicTransactionException {
-        return super.delete(id);
+    public Response delete(@HeaderParam("X-Content") Boolean xContent, @PathParam("id") Integer id) throws BusinessLogicTransactionException {
+        return super.delete(xContent, id);
     }
 
-    @RolesAllowed({ROLE_CUSTOMER})
+
+
+    @ApiOperation(
+            value = SwaggerConstants.TOGGLE_DELETE_VERSION_VALUE + "user.",
+            notes = SwaggerConstants.TOGGLE_DELETE_VERSION_NOTE,
+            authorizations = {
+                    @Authorization(
+                        value = SwaggerConstants.AUTH_VALUE,
+                        scopes = { @AuthorizationScope(
+                            scope = ROLE_CUSTOMER,
+                            description = SwaggerConstants.AUTH_ROLE_CUSTOMER_DESC)
+                    }
+            )
+            })
+    @ApiResponses({
+            @ApiResponse(code = HttpServletResponse.SC_OK, message = SwaggerConstants.STATUS_OK_DESC, response = User.class),
+            @ApiResponse(code = HttpServletResponse.SC_NO_CONTENT, message = SwaggerConstants.STATUS_NO_CONTENT_DESC),
+            @ApiResponse(code = HttpServletResponse.SC_NOT_FOUND, message = SwaggerConstants.STATUS_NOT_FOUND_DESC, response = ApiException.class),
+            @ApiResponse(code = HttpServletResponse.SC_FORBIDDEN, message = SwaggerConstants.STATUS_FORBIDDEN_DESC)
+    })
+    @RolesAllowed(ROLE_CUSTOMER)
     @PUT
     @Path("{id}/toggleIsDeleted")
     @Override
-    public Response toggleIsDeleted(Integer id) throws BusinessLogicTransactionException {
-        return super.toggleIsDeleted(id);
+    public Response toggleIsDeleted(@HeaderParam("X-Content") Boolean xContent, @PathParam("id") Integer id) throws BusinessLogicTransactionException {
+        return super.toggleIsDeleted(xContent, id);
     }
 
+
     @Override
-    protected void authorizationValidation(Integer id) throws BusinessLogicTransactionException {
-        AuthEntity authEntity = authProvider.generateAuthEntity(sc.getUserPrincipal());
-        if(authEntity.getAccountType() == AuthEntity.AccountType.CUSTOMER){
-            Customer customer = databaseService.getDatabase().getAuthorizedCustomer(authEntity);
-            if(customer.getId() != id){
-                throw new BusinessLogicTransactionException(Response.Status.FORBIDDEN, "Customer does not have permission.");
+    protected void initManagers() {
+        authorizationManager = new AuthorizationManager<Customer>(getAuthorizedEntity()) {
+
+            @Override
+            public void setAuthorityFilter(QueryParameters queryParameters, Database database) throws BusinessLogicTransactionException {
+                QueryFilter filter = new QueryFilter("authenticationId", FilterOperation.EQ, authEntity.getId());
+                QueryParamatersUtility.addParam(queryParameters.getFilters(), filter);
             }
-        }
+
+            @Override
+            public void checkAuthority(Customer entity, Database database) throws BusinessLogicTransactionException {
+                if(!entity.getAuthenticationId().equals(authEntity.getId())){
+                    throw new BusinessLogicTransactionException(Response.Status.FORBIDDEN, "Customer does not have permission.");
+                }
+            }
+
+        };
     }
 }

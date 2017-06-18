@@ -12,6 +12,7 @@ import java.util.Set;
 
 @Entity
 @Table(name="product")
+@Cacheable(true)
 @JsonIdentityInfo(generator=ObjectIdGenerators.IntSequenceGenerator.class)
 public class Product extends BaseEntityVersion<Product> {
 
@@ -23,6 +24,9 @@ public class Product extends BaseEntityVersion<Product> {
 
     @Column(precision = Constants.PRECISION, scale = Constants.SCALE, nullable = false)
     private BigDecimal price;
+
+    @Column(precision = Constants.PRECISION, scale = Constants.SCALE, nullable = false)
+    private BigDecimal discount;
 
 
     @JsonInclude(JsonInclude.Include.NON_EMPTY)
@@ -60,5 +64,13 @@ public class Product extends BaseEntityVersion<Product> {
 
     public void setProductOnOrders(Set<ProductOnOrder> productOnOrders) {
         this.productOnOrders = productOnOrders;
+    }
+
+    public BigDecimal getDiscount() {
+        return discount;
+    }
+
+    public void setDiscount(BigDecimal discount) {
+        this.discount = discount;
     }
 }

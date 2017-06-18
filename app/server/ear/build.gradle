@@ -15,6 +15,7 @@ dependencies {
 
     earlib (project(path: ':app:server:ejb', configuration: 'compile')){
         exclude group: 'javax', module: 'javaee-api'
+        exclude group: 'org.keycloak', module: 'keycloak-core'
     }
 
     deploy project(path: ':app:server:ejb', configuration: 'archives')
@@ -61,13 +62,22 @@ configurations.deploy.allDependencies.forEach({e ->
 /**
  * Ear deployment configuration
  */
-ext {
+def setProperties() {
+    evaluationDependsOn(":app:server:rest")
+    def warProject = project(":app:server:rest")
+    ext.warArchive = warProject.name + "-" + warProject.version + ".war"
+    ext.warContextRoot = warProject.warContextRoot
+
+    evaluationDependsOn(":app:server:ejb")
+    def ejbProject = project(":app:server:ejb")
+    ext.ejbArchive = ejbProject.name + "-" + ((String)ejbProject.version) + ".jar"
+}
+setProperties()
+
+/*ext {
     warArchive = 'rest-1.0-SNAPSHOT.war'
     ejbArchive = 'ejb-1.0-SNAPSHOT.jar'
-}
-
-evaluationDependsOn(":app:server:rest")
-ext.warContextRoot = project(":app:server:rest").warContextRoot
+}*/
 
 ear {
     appDirName 'src/main/app'

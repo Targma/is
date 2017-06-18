@@ -3,8 +3,10 @@ package si.fri.demo.is.app.server.ejb.database;
 import com.github.tfaga.lynx.beans.QueryParameters;
 import com.github.tfaga.lynx.interfaces.CriteriaFilter;
 import org.jinq.jpa.JPAJinqStream;
-import si.fri.demo.is.core.businessLogic.authentication.base.AuthEntity;
+import si.fri.demo.is.core.businessLogic.authentication.AuthEntity;
+import si.fri.demo.is.core.businessLogic.database.AuthorizationManager;
 import si.fri.demo.is.core.businessLogic.database.Database;
+import si.fri.demo.is.core.businessLogic.database.ValidationManager;
 import si.fri.demo.is.core.businessLogic.dto.Paging;
 import si.fri.demo.is.core.businessLogic.exceptions.BusinessLogicTransactionException;
 import si.fri.demo.is.core.jpa.entities.Customer;
@@ -15,13 +17,13 @@ import si.fri.demo.is.core.jpa.entities.base.BaseEntityVersion;
 import javax.annotation.PostConstruct;
 import javax.annotation.security.PermitAll;
 import javax.ejb.Local;
-import javax.ejb.Stateful;
+import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import java.util.logging.Logger;
 
 @PermitAll
-@Stateful
+@Stateless
 @Local(DatabaseServiceLocal.class)
 public class DatabaseService implements DatabaseServiceLocal {
 
@@ -38,64 +40,68 @@ public class DatabaseService implements DatabaseServiceLocal {
         this.database = new Database(em);
     }
 
-
-    public <T extends BaseEntity> Paging<T> get(Class<T> c, QueryParameters param) throws BusinessLogicTransactionException {
-        return database.get(c, param);
+    public Database getDatabase() {
+        return database;
     }
 
     @Override
-    public <T extends BaseEntity> Paging<T> get(Class<T> c, CriteriaFilter<T> customFilter) throws BusinessLogicTransactionException {
-        return database.get(c, customFilter);
+    public <T extends BaseEntity> Paging<T> get(Class<T> c, QueryParameters param, AuthorizationManager<T> authorizationManager) throws BusinessLogicTransactionException {
+        return database.get(c, param, authorizationManager);
     }
 
     @Override
-    public <T extends BaseEntity> T get(Class<T> c, Integer id) throws BusinessLogicTransactionException {
-        return database.get(c, id);
+    public <T extends BaseEntity> Paging<T> get(Class<T> c, CriteriaFilter<T> customFilter, AuthorizationManager<T> authorizationManager) throws BusinessLogicTransactionException {
+        return database.get(c, customFilter, authorizationManager);
     }
 
     @Override
-    public <T extends BaseEntity> T create(T newEntity) throws BusinessLogicTransactionException {
-        return database.create(newEntity);
+    public <T extends BaseEntity> T get(Class<T> c, Integer id, AuthorizationManager<T> authorizationManager) throws BusinessLogicTransactionException {
+        return database.get(c, id, authorizationManager);
     }
 
     @Override
-    public BaseEntity update(BaseEntity newEntity) throws BusinessLogicTransactionException {
-        return database.update(newEntity);
+    public <T extends BaseEntity> T create(T newEntity, AuthorizationManager<T> authorizationManager, ValidationManager<T> validationManager) throws BusinessLogicTransactionException {
+        return database.create(newEntity, authorizationManager, validationManager);
     }
 
     @Override
-    public BaseEntity patch(BaseEntity newEntity) throws BusinessLogicTransactionException {
-        return database.patch(newEntity);
+    public <T extends BaseEntity> T update(T newEntity, AuthorizationManager<T> authorizationManager, ValidationManager<T> validationManager) throws BusinessLogicTransactionException {
+        return database.update(newEntity, authorizationManager, validationManager);
     }
 
     @Override
-    public BaseEntity delete(Class<? extends BaseEntity> c, Integer id) throws BusinessLogicTransactionException {
-        return database.delete(c, id);
+    public <T extends BaseEntity> T patch(T newEntity, AuthorizationManager<T> authorizationManager, ValidationManager<T> validationManager) throws BusinessLogicTransactionException {
+        return database.patch(newEntity, authorizationManager, validationManager);
     }
 
     @Override
-    public BaseEntity toggleIsDeleted(Class<? extends BaseEntity> c, Integer id) throws BusinessLogicTransactionException {
-        return database.toggleIsDeleted(c, id);
+    public <T extends BaseEntity> T delete(Class<T> c, Integer id, AuthorizationManager<T> authorizationManager, ValidationManager<T> validationManager) throws BusinessLogicTransactionException {
+        return database.delete(c, id, authorizationManager, validationManager);
     }
 
     @Override
-    public BaseEntity permDelete(Class<? extends BaseEntity> c, Integer id) throws BusinessLogicTransactionException {
-        return database.permDelete(c, id);
+    public <T extends BaseEntity> T toggleIsDeleted(Class<T> c, Integer id, AuthorizationManager<T> authorizationManager, ValidationManager<T> validationManager) throws BusinessLogicTransactionException {
+        return database.toggleIsDeleted(c, id, authorizationManager, validationManager);
     }
 
     @Override
-    public BaseEntityVersion createVersion(BaseEntityVersion newEntityVersion) throws BusinessLogicTransactionException {
-        return database.createVersion(newEntityVersion);
+    public <T extends BaseEntity> T permDelete(Class<T> c, Integer id, AuthorizationManager<T> authorizationManager, ValidationManager<T> validationManager) throws BusinessLogicTransactionException {
+        return database.permDelete(c, id, authorizationManager, validationManager);
     }
 
     @Override
-    public BaseEntityVersion updateVersion(int oldId, BaseEntityVersion newBaseEntityVersion) throws BusinessLogicTransactionException {
-        return database.updateVersion(oldId, newBaseEntityVersion);
+    public <T extends BaseEntityVersion> T createVersion(T newEntityVersion, AuthorizationManager<T> authorizationManager, ValidationManager<T> validationManager) throws BusinessLogicTransactionException {
+        return database.createVersion(newEntityVersion, authorizationManager, validationManager);
     }
 
     @Override
-    public BaseEntityVersion patchVersion(int oldId, BaseEntityVersion newBaseEntityVersion) throws BusinessLogicTransactionException {
-        return database.patchVersion(oldId, newBaseEntityVersion);
+    public <T extends BaseEntityVersion> T updateVersion(int oldId, T newBaseEntityVersion, AuthorizationManager<T> authorizationManager, ValidationManager<T> validationManager) throws BusinessLogicTransactionException {
+        return database.updateVersion(oldId, newBaseEntityVersion, authorizationManager, validationManager);
+    }
+
+    @Override
+    public <T extends BaseEntityVersion> T patchVersion(int oldId, T newBaseEntityVersion, AuthorizationManager<T> authorizationManager, ValidationManager<T> validationManager) throws BusinessLogicTransactionException {
+        return database.patchVersion(oldId, newBaseEntityVersion, authorizationManager, validationManager);
     }
 
     @Override
@@ -104,8 +110,8 @@ public class DatabaseService implements DatabaseServiceLocal {
     }
 
     @Override
-    public <U> JPAJinqStream<U> getStream(Class<U> entity) {
-        return getStream(entity);
+    public <U extends BaseEntity> JPAJinqStream<U> getStream(Class<U> entity) {
+        return null;
     }
 
     @Override
@@ -116,9 +122,5 @@ public class DatabaseService implements DatabaseServiceLocal {
     @Override
     public User getAuthorizedUser(AuthEntity authEntity) throws BusinessLogicTransactionException {
         return database.getAuthorizedUser(authEntity);
-    }
-
-    public Database getDatabase() {
-        return database;
     }
 }

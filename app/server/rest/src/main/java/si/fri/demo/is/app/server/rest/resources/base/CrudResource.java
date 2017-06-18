@@ -10,70 +10,59 @@ import javax.ws.rs.core.Response;
 
 public abstract class CrudResource<T extends BaseEntity> extends GetResource<T> {
 
-    protected void updateValidation(Integer id, T newObject) throws BusinessLogicTransactionException { authorizationValidation(id); }
-    protected void patchValidation(Integer id, T newObject) throws BusinessLogicTransactionException { authorizationValidation(id); }
-    protected void createValidation(T newObject) throws BusinessLogicTransactionException { }
-    protected void deleteValidation(Integer id) throws BusinessLogicTransactionException { authorizationValidation(id); }
-    protected void toggleIsDeletedValidation(Integer id) throws BusinessLogicTransactionException { authorizationValidation(id); }
-
 
     public CrudResource(Class<T> type) {
         super(type);
     }
 
+    @POST
+    public Response create(@HeaderParam("X-Content") Boolean xContent, T entity) throws BusinessLogicTransactionException {
+        entity.setId(null);
+
+        T dbEntity = databaseService.create(entity, authorizationManager, validationManager);
+
+        return buildResponse(dbEntity, xContent, false, Response.Status.CREATED);
+    }
 
     @PUT
     @Path("{id}")
-    public Response update(@PathParam("id") Integer id, T newObject) throws BusinessLogicTransactionException {
+    public Response update(@HeaderParam("X-Content") Boolean xContent,
+                           @PathParam("id") Integer id, T newObject) throws BusinessLogicTransactionException {
         newObject.setId(id);
 
-        updateValidation(id, newObject);
+        T dbEntity = databaseService.update(newObject, authorizationManager, validationManager);
 
-        databaseService.getDatabase().update(newObject);
-
-        return Response.noContent().build();
+        return buildResponse(dbEntity, xContent);
     }
 
     @PATCH
     @Path("{id}")
-    public Response patch(@PathParam("id") Integer id, T newObject) throws BusinessLogicTransactionException {
-        newObject.setId(id);
+    public Response patch(@HeaderParam("X-Content") Boolean xContent,
+                          @PathParam("id") Integer id, T entity) throws BusinessLogicTransactionException {
+        entity.setId(id);
 
-        patchValidation(id, newObject);
+        T dbEntity = databaseService.patch(entity, authorizationManager, validationManager);
 
-        databaseService.getDatabase().patch(newObject);
-
-        return Response.noContent().build();
-    }
-
-    @POST
-    public Response create(T object) throws BusinessLogicTransactionException {
-        object.setId(null);
-
-        createValidation(object);
-
-        databaseService.getDatabase().create(object);
-
-        return Response.status(Response.Status.CREATED).entity(object).build();
+        return buildResponse(dbEntity, xContent);
     }
 
     @DELETE
     @Path("{id}")
-    public Response delete(@PathParam("id") Integer id) throws BusinessLogicTransactionException {
-        deleteValidation(id);
+    public Response delete(@HeaderParam("X-Content") Boolean xContent,
+                           @PathParam("id") Integer id) throws BusinessLogicTransactionException {
 
-        databaseService.getDatabase().delete(type, id);
+        T dbEntity = databaseService.delete(type, id, authorizationManager, validationManager);
 
-        return Response.noContent().build();
+        return buildResponse(dbEntity, xContent);
     }
 
     @PUT
     @Path("{id}/toggleIsDeleted")
-    public Response toggleIsDeleted(@PathParam("id") Integer id) throws BusinessLogicTransactionException {
-        toggleIsDeletedValidation(id);
+    public Response toggleIsDeleted(@HeaderParam("X-Content") Boolean xContent,
+                                    @PathParam("id") Integer id) throws BusinessLogicTransactionException {
 
-        databaseService.getDatabase().toggleIsDeleted(type, id);
+        T dbEntity = databaseService.toggleIsDeleted(type, id, authorizationManager, validationManager);
 
-        return Response.noContent().build();
+        return buildResponse(dbEntity, xContent);
     }
 }

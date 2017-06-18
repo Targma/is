@@ -7,93 +7,62 @@ import si.fri.demo.is.core.jpa.entities.base.BaseEntityVersion;
 import javax.ws.rs.*;
 import javax.ws.rs.core.Response;
 
-public abstract class CrudVersionResource<T extends BaseEntityVersion> extends GetResource {
+public abstract class CrudVersionResource<T extends BaseEntityVersion> extends GetResource<T> {
 
-    protected void updateValidation(Integer id, T newObject) throws BusinessLogicTransactionException { authorizationValidation(id); }
-    protected void patchValidation(Integer id, T newObject) throws BusinessLogicTransactionException { authorizationValidation(id); }
-    protected void createValidation(T newObject) throws BusinessLogicTransactionException { }
-    protected void deleteValidation(Integer id) throws BusinessLogicTransactionException { authorizationValidation(id); }
-    protected void toggleIsDeletedValidation(Integer id) throws BusinessLogicTransactionException { authorizationValidation(id); }
-
-    protected boolean useCustomCreate = false;
-    protected T customCreate(T newEntity) throws BusinessLogicTransactionException { throw  BusinessLogicTransactionException.buildNotImplemented(); }
-
-    protected boolean useCustomUpdate = false;
-    protected T customUpdate(int id, T newEntity) throws BusinessLogicTransactionException { throw BusinessLogicTransactionException.buildNotImplemented(); }
-
-    protected boolean useCustomPatch = false;
-    protected T customPatch(int id, T newEntity) throws BusinessLogicTransactionException { throw BusinessLogicTransactionException.buildNotImplemented(); }
-
-
-    public CrudVersionResource(Class type) {
+    public CrudVersionResource(Class<T> type) {
         super(type);
     }
 
+    @POST
+    public Response create(@HeaderParam("X-Content") Boolean xContent, T entity) throws BusinessLogicTransactionException {
+        entity.setId(null);
+
+        T dbEntity = databaseService.createVersion(entity, authorizationManager, validationManager);
+
+        return buildResponse(dbEntity, xContent, true, Response.Status.CREATED);
+    }
 
     @PUT
     @Path("{id}")
-    public Response update(@PathParam("id") Integer id, T newObject) throws BusinessLogicTransactionException {
-        newObject.setId(id);
+    public Response update(@HeaderParam("X-Content") Boolean xContent,
+                           @PathParam("id") Integer id, T entity) throws BusinessLogicTransactionException {
+        entity.setId(id);
 
-        updateValidation(id, newObject);
+        T dbEntity = databaseService.updateVersion(id, entity, authorizationManager, validationManager);
 
-        if(useCustomUpdate){
-            customUpdate(id, newObject);
-        } else {
-            databaseService.updateVersion(id, newObject);
-        }
-
-        return Response.noContent().build();
+        return buildResponse(dbEntity, xContent, true, Response.Status.CREATED);
     }
 
     @PATCH
     @Path("{id}")
-    public Response patch(@PathParam("id") Integer id, T newObject) throws BusinessLogicTransactionException {
-        newObject.setId(id);
+    public Response patch(@HeaderParam("X-Content") Boolean xContent,
+                          @PathParam("id") Integer id, T entity) throws BusinessLogicTransactionException {
+        entity.setId(id);
 
-        patchValidation(id, newObject);
+        T dbEntity = databaseService.patchVersion(id, entity, authorizationManager, validationManager);
 
-        if(useCustomPatch){
-            customPatch(id, newObject);
-        } else {
-            databaseService.patchVersion(id, newObject);
-        }
-
-        return Response.noContent().build();
-    }
-
-    @POST
-    public Response create(T object) throws BusinessLogicTransactionException {
-        object.setId(null);
-
-        createValidation(object);
-
-        if(useCustomCreate){
-            customCreate(object);
-        } else {
-            databaseService.createVersion(object);
-        }
-
-        return Response.status(Response.Status.CREATED).entity(object).build();
+        return buildResponse(dbEntity, xContent, true, Response.Status.CREATED);
     }
 
     @DELETE
     @Path("{id}")
-    public Response delete(@PathParam("id") Integer id) throws BusinessLogicTransactionException {
-        deleteValidation(id);
+    public Response delete(@HeaderParam("X-Content") Boolean xContent,
+                           @PathParam("id") Integer id) throws BusinessLogicTransactionException {
 
-        databaseService.delete(type, id);
+        T dbEntity = databaseService.delete(type, id, authorizationManager, validationManager);
 
-        return Response.noContent().build();
+        return buildResponse(dbEntity, xContent);
     }
 
     @PUT
     @Path("{id}/toggleIsDeleted")
-    public Response toggleIsDeleted(@PathParam("id") Integer id) throws BusinessLogicTransactionException {
-        toggleIsDeletedValidation(id);
+    public Response toggleIsDeleted(@HeaderParam("X-Content") Boolean xContent,
+                                    @PathParam("id") Integer id) throws BusinessLogicTransactionException {
 
-        databaseService.toggleIsDeleted(type, id);
+        T dbEntity = databaseService.toggleIsDeleted(type, id, authorizationManager, validationManager);
 
-        return Response.noContent().build();
+        return buildResponse(dbEntity, xContent);
     }
+
+
 }

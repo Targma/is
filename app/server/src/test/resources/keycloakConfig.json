@@ -2,6 +2,6 @@
   "realm": "is",
   "hostUrl": "http://localhost:8081/auth",
   "client": "is-wildfly",
-  "username": "root",
-  "password": "root"
+  "username": "test",
+  "password": "test"
 }

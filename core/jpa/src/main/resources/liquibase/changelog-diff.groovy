@@ -1,6 +1,6 @@
 databaseChangeLog {
-  changeSet(id: '1497125072193-1', author: 'Targma (generated)') {
-    addNotNullConstraint(columnDataType: 'varchar(128)', columnName: 'title', tableName: 'product')
+  changeSet(id: '1497385152346-1', author: 'Targma (generated)') {
+    dropUniqueConstraint(constraintName: 'uk_dwk6cx0afu8bs9o4t536v1j5v', tableName: 'customer')
   }
 
 }

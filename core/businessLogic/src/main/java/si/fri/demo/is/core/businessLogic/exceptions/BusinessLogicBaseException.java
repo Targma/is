@@ -21,20 +21,6 @@ public abstract class BusinessLogicBaseException extends Exception {
         this.exception = exception;
     }
 
-    public String toJson() {
-        if(status == Response.Status.NO_CONTENT)
-            return "";
-
-        StringBuilder sb = new StringBuilder("{");
-
-        sb.append("\"message\":\"" + message + "\"");
-
-        if(exception != null)
-            sb.append(",\"exception\":\"" + exception.toString() + "\"");
-
-        return sb.append("}").toString();
-    }
-
     public Response.Status getStatus() {
         return status;
     }

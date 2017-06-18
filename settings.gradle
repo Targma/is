@@ -6,4 +6,5 @@ include 'app:server:ejb'
 include 'app:server:rest'
 include 'app:server:ear'
 include 'api'
+include 'app:microservice'
 

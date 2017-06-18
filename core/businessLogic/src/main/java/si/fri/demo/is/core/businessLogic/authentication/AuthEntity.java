@@ -1,19 +1,23 @@
-package si.fri.demo.is.core.businessLogic.authentication.base;
+package si.fri.demo.is.core.businessLogic.authentication;
+
+import java.util.HashSet;
+import java.util.Set;
 
 public class AuthEntity {
 
-    public enum AccountType{
-        CUSTOMER, ADMIN
-    }
-
+    public static final String ROLE_CUSTOMER = "CUSTOMER";
+    public static final String ROLE_ADMINISTRATOR = "ADMINISTRATOR";
 
     protected String id;
     protected String email;
     protected String name;
     protected String surname;
 
-    protected AccountType accountType;
+    protected Set<String> roles;
 
+    public AuthEntity() {
+        roles = new HashSet<>();
+    }
 
     public String getId() {
         return id;
@@ -47,11 +51,15 @@ public class AuthEntity {
         this.email = email;
     }
 
-    public AccountType getAccountType() {
-        return accountType;
+    public Set<String> getRoles() {
+        return roles;
     }
 
-    public void setAccountType(AccountType accountType) {
-        this.accountType = accountType;
+    public void setRoles(Set<String> roles) {
+        this.roles = roles;
+    }
+
+    public boolean isInRole(String role){
+        return roles.contains(role);
     }
 }

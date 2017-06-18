@@ -13,10 +13,11 @@ import java.util.Set;
 
 @Entity
 @Table(name="customer")
+@Cacheable(true)
 @JsonIdentityInfo(generator=ObjectIdGenerators.IntSequenceGenerator.class)
 public class Customer extends BaseEntityVersion<Customer> {
 
-    @Column(length = Constants.DEF_STRING_LEN, nullable = false, unique = true)
+    @Column(length = Constants.DEF_STRING_LEN, nullable = false)
     private String email;
 
     @Column(length = Constants.DEF_STRING_LEN)
@@ -38,47 +39,20 @@ public class Customer extends BaseEntityVersion<Customer> {
 
 
     @JsonIgnore
-    private boolean customerBaseSkip(Field field){
-        switch (field.getName()) {
-            case "email":
-            case "authenticationId":
-                return true;
-            default:
-                return false;
-        }
-    }
-
-    @Override
-    protected boolean genericUpdateSkip(Field field) {
-        boolean skip = super.genericUpdateSkip(field);
+    protected boolean baseSkip(Field field){
+        boolean skip = super.baseSkip(field);
         if(skip){
-            return true;
+            return skip;
         } else {
-            return customerBaseSkip(field);
+            switch (field.getName()) {
+                case "email":
+                case "authenticationId":
+                    return true;
+                default:
+                    return false;
+            }
         }
     }
-
-    @Override
-    protected boolean genericPatchSkip(Field field) {
-        boolean skip = super.genericPatchSkip(field);
-        if(skip){
-            return true;
-        } else {
-            return customerBaseSkip(field);
-        }
-    }
-
-    @Override
-    public boolean genericIsDifferentSkip(Field field) {
-        boolean skip = super.genericIsDifferentSkip(field);
-        if(skip){
-            return true;
-        } else {
-            return customerBaseSkip(field);
-        }
-    }
-
-
 
     public String getName() {
         return name;

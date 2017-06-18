@@ -21,6 +21,6 @@ public class BusinessLogicOperationExceptionMapper implements ExceptionMapper<Bu
     @Override
     public Response toResponse(BusinessLogicOperationException e) {
         LOG.log(Level.SEVERE, String.format("[%s][%s][%s}", "VcgServerOperationException", httpServletRequest.getRequestURI(), httpServletRequest.getRemoteAddr()), e);
-        return Response.status(e.getStatus()).entity(e.toJson()).build();
+        return Response.status(e.getStatus()).entity(ApiException.build(e)).build();
     }
 }

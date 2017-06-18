@@ -10,7 +10,7 @@ import java.math.BigDecimal;
 import java.util.*;
 
 @MappedSuperclass
-public abstract class BaseEntity<T> implements Serializable {
+public abstract class BaseEntity<T extends BaseEntity> implements Serializable {
 
     @Id
     @GeneratedValue(strategy= GenerationType.IDENTITY)
@@ -32,12 +32,12 @@ public abstract class BaseEntity<T> implements Serializable {
     protected Date editedOn;
 
     @JsonIgnore
-    public <T extends BaseEntity> void update(T object, EntityManager em) throws IllegalAccessException {
+    public void update(T object, EntityManager em) throws IllegalAccessException {
         genericUpdate(object, em);
     }
 
     @JsonIgnore
-    public <T extends BaseEntity> void patch(T object, EntityManager em) throws IllegalAccessException {
+    public void patch(T object, EntityManager em) throws IllegalAccessException {
         genericPatch(object, em);
     }
 
@@ -58,6 +58,7 @@ public abstract class BaseEntity<T> implements Serializable {
         editedOn = date;
     }
 
+    @JsonIgnore
     protected List<Field> getAllClassFields(){
         List<Field> fieldList = new ArrayList<>();
         Class tmpClass = getClass();
@@ -93,10 +94,12 @@ public abstract class BaseEntity<T> implements Serializable {
         }
     }
 
-    private boolean baseSkip(Field field){
-        switch (field.getName()){
+    protected boolean baseSkip(Field field){
+        switch (field.getName()) {
+            case "isDeleted":
             case "editedOn":
             case "createdOn":
+            case "version":
                 return true;
             default:
                 return false;
@@ -109,7 +112,7 @@ public abstract class BaseEntity<T> implements Serializable {
     }
 
     @JsonIgnore
-    public <T extends BaseEntity> void genericUpdate(T object, EntityManager em) throws IllegalAccessException {
+    public void genericUpdate(T object, EntityManager em) throws IllegalAccessException {
         for (Field field : getAllClassFields()) {
             if(genericUpdateSkip(field)){
                 continue;
@@ -143,7 +146,7 @@ public abstract class BaseEntity<T> implements Serializable {
     }
 
     @JsonIgnore
-    public <T extends BaseEntity> void genericPatch(T object, EntityManager em) throws IllegalAccessException {
+    public void genericPatch(T object, EntityManager em) throws IllegalAccessException {
         for (Field field : getAllClassFields()) {
             if(genericPatchSkip(field)){
                 continue;
@@ -180,7 +183,7 @@ public abstract class BaseEntity<T> implements Serializable {
     private boolean areObjectDifferent(Class type, Field field, Object e1, Object e2){
         if (BaseEntity.class.isAssignableFrom(type)) {
             if (field.getAnnotation(JoinColumn.class) != null) {
-                if(((BaseEntity) e1).getId() != ((BaseEntity) e2).getId()){
+                if(!((BaseEntity) e1).getId().equals(((BaseEntity) e2).getId())){
                     return true;
                 }
             }
@@ -212,10 +215,12 @@ public abstract class BaseEntity<T> implements Serializable {
                 Object e1 = field.get(this);
                 Object e2 = field.get(entity);
 
-                if(e1 == null && e2 == null){
+                if(e1 == null && e2 == null) {
                     continue;
                 } else if(e1 != null && e2 != null) {
-                    return areObjectDifferent(type, field, e1, e2);
+                    if(areObjectDifferent(type, field, e1, e2)){
+                        return true;
+                    }
                 } else {
                     return true;
                 }
@@ -239,12 +244,14 @@ public abstract class BaseEntity<T> implements Serializable {
                 Object e1 = field.get(this);
                 Object e2 = field.get(entity);
 
-                if(e2 == null){
+                if(e2 == null) {
                     continue;
-                } if(e1 == null){
+                } if (e1 == null) {
                     return true;
                 } else {
-                    return areObjectDifferent(type, field, e1, e2);
+                    if(areObjectDifferent(type, field, e1, e2)){
+                        return true;
+                    }
                 }
             }
         }
@@ -275,8 +282,12 @@ public abstract class BaseEntity<T> implements Serializable {
                         JoinColumn joinColumn = field.getAnnotation(JoinColumn.class);
                         if(joinColumn != null){
                             Object value = field.get(this);
-                            if(!joinColumn.nullable() && value == null){
-                                sbError.append(String.format("%s:NotNull:%s,", field.getName(), "Can not be null"));
+                            if(!joinColumn.nullable()){
+                                if(value == null){
+                                    sbError.append(String.format("%s:NotNull:%s,", field.getName(), "Can not be null"));
+                                } else if(((BaseEntity) value).getId() == null) {
+                                    sbError.append(String.format("%s:NotNull:%s id,", field.getName(), "Can not be null"));
+                                }
                             }
                         }
                     }

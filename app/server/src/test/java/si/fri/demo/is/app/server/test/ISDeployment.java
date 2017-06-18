@@ -1,5 +1,7 @@
-package si.fri.demo.is.app.server.test.base;
+package si.fri.demo.is.app.server.test;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.test.api.ArquillianResource;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.exporter.ZipExporter;
@@ -11,16 +13,22 @@ import java.io.File;
 import java.net.URL;
 import java.nio.file.Paths;
 
-public abstract class BaseTest {
+public abstract class ISDeployment {
 
     public static final String EAR_BUILD_PATH = System.getProperty("ear.path");
     public static final String TEST_EAR_NAME = "test-" + Paths.get(EAR_BUILD_PATH).getFileName().toString();
     public static final String CONTEXT_ROOT = System.getProperty("deployment.contextRoot");
-
     public static final String ARQUILLIAN_BUILD_PATH = "./build/arquillian/";
+
+    public static final ObjectMapper mapper = new ObjectMapper();
 
     @ArquillianResource
     protected URL deploymentUrl;
+
+    @Deployment(testable = false)
+    public static EnterpriseArchive deployment() {
+        return createDeployment();
+    }
 
     public static EnterpriseArchive createDeployment() {
         EnterpriseArchive ear = ShrinkWrap
@@ -51,37 +59,3 @@ public abstract class BaseTest {
     }
 
 }
-
-/*
-@Deployment
-public static EnterpriseArchive createDeployment() {
-
-    String path = System.getProperty(EAR_PATH);
-    File f = new File(path);
-    EnterpriseArchive ear = ShrinkWrap.createFromZipFile(EnterpriseArchive.class, f);
-
-    final JavaArchive foobarEjb = ShrinkWrap.create(JavaArchive.class, "foobarEjb.jar");
-
-    foobarEjb.addClasses(
-                    MyTest1.class,
-                    MyTest2.class);
-    ear.addAsModule(foobarEjb);
-
-
-    final WebArchive war = ShrinkWrap.create(WebArchive.class, "test.war")
-            .addAsWebInfResource("WEB-INF/web.xml")
-            .addAsWebResource("index.xhtml");
-
-    ear.addAsModule(Testable.archiveToTest(war));
-
-    modifyApplicationXML(ear);
-    modifyJBossDeploymentStructure(ear);
-
-
-    return ear;
-}
- */
-/*
-WebArchive war = ear.getAsType(WebArchive.class, "/mywarname.war");
-war.addClass(TestIS.class);
- */

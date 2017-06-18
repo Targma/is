@@ -17,6 +17,7 @@ repositories {
 dependencies {
 
     testCompile project(':api')
+    testCompile project(':core:businessLogic')
 
     testCompile group: 'junit', name: 'junit'
 
@@ -36,6 +37,9 @@ dependencies {
  */
 ext {
     jbossHome = 'C:/Users/Targma/Servers/wildfly-10.0.0.Final'
+    loggingManager = 'org.jboss.logmanager.LogManager'
+    config = 'standalone-full.xml'
+    modules = project.jbossHome + '/modules'
 }
 
 def setProperties() {
@@ -58,7 +62,7 @@ test {
     systemProperty 'ear.path', project.earPath
     systemProperty 'deployment.contextRoot', project.contextRoot
 
-    systemProperty 'java.util.logging.manager', 'org.jboss.logmanager.LogManager'
-    systemProperty 'jboss.server.default.config', 'standalone-full.xml'
-    systemProperty 'modulePath', project.jbossHome + '/modules'
+    systemProperty 'java.util.logging.manager', project.loggingManager
+    systemProperty 'jboss.server.default.config', project.config
+    systemProperty 'modulePath', project.modules
 }

@@ -1,0 +1,55 @@
+group 'si.fri.demo.is'
+version '1.0-SNAPSHOT'
+
+apply plugin: 'java'
+apply plugin: 'idea'
+
+
+sourceCompatibility = 1.8
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    compile project(':core:businessLogic')
+
+    compile group: "com.kumuluz.ee", name: 'kumuluzee-core'
+    compile group: "com.kumuluz.ee", name: 'kumuluzee-servlet-jetty'
+    compile group: "com.kumuluz.ee", name: 'kumuluzee-jax-rs-jersey'
+    compile group: "com.kumuluz.ee", name: 'kumuluzee-jpa-hibernate'
+    compile group: "com.kumuluz.ee", name: 'kumuluzee-cdi-weld'
+    compile group: 'org.postgresql', name: 'postgresql'
+
+    compile group: 'com.fasterxml.jackson.datatype', name: 'jackson-datatype-hibernate4'
+
+    compile group: 'org.slf4j', name: 'slf4j-simple'
+
+    testCompile group: 'junit', name: 'junit'
+}
+
+jar {
+    manifest {
+        attributes 'Main-Class': 'com.kumuluz.ee.EeApplication'
+    }
+}
+jar.enabled = false;
+
+task copyCompileDependencies(type: Copy) {
+    from configurations.compile
+    into project.buildDir.name + "/kumuluzee/dependency"
+}
+
+task copyCompileClasses(type: Copy) {
+    from "src/main/resources"
+    from "build/classes/java/main"
+    into project.buildDir.name + "/kumuluzee"
+}
+
+task buildKumuluzEE {
+    dependsOn build
+    dependsOn copyCompileDependencies
+    dependsOn copyCompileClasses
+    copyCompileDependencies.mustRunAfter build
+    copyCompileClasses.mustRunAfter build
+}

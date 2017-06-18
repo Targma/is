@@ -1,5 +1,7 @@
 package si.fri.demo.is.api.client.authorization.provider;
 
+import org.jboss.resteasy.plugins.providers.jackson.ResteasyJackson2Provider;
+import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.keycloak.OAuth2Constants;
 import org.keycloak.admin.client.Keycloak;
 import org.keycloak.admin.client.KeycloakBuilder;
@@ -21,11 +23,13 @@ public class KeycloakISAuthProvider extends ISApiAuthProvider {
     }
 
     private void initClient(){
+        ResteasyProviderFactory resteasyProviderFactory = new ResteasyProviderFactory();
+        resteasyProviderFactory.register(ResteasyJackson2Provider.class);
+
         client = KeycloakBuilder.builder()
                 .realm(configuration.realm)
                 .serverUrl(configuration.hostUrl)
                 .clientId(configuration.client)
-                //.clientSecret(clientSecret)
                 .grantType(OAuth2Constants.CLIENT_CREDENTIALS)
                 .username(configuration.username)
                 .password(configuration.password)
