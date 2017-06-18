@@ -7,4 +7,5 @@ include 'app:server:rest'
 include 'app:server:ear'
 include 'api'
 include 'app:microservice'
+include 'core:restComponents'
 

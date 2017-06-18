@@ -1,4 +1,4 @@
-package si.fri.demo.is.app.microservice.rest.resources;
+package si.fri.demo.is.app.microservice.rest;
 
 import com.github.tfaga.lynx.beans.QueryParameters;
 import si.fri.demo.is.core.businessLogic.database.Database;

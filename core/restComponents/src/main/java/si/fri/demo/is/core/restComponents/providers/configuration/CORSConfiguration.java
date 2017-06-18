@@ -1,4 +1,4 @@
-package si.fri.demo.is.app.microservice.rest.providers.configuration;
+package si.fri.demo.is.core.restComponents.providers.configuration;
 
 import javax.ws.rs.container.ContainerRequestContext;
 import javax.ws.rs.container.ContainerResponseContext;

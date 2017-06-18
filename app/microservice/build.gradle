@@ -28,22 +28,20 @@ dependencies {
     testCompile group: 'junit', name: 'junit'
 }
 
-jar {
-    manifest {
-        attributes 'Main-Class': 'com.kumuluz.ee.EeApplication'
+task copyCompileDependencies() {
+    def depPath = project.buildDir.name + "/kumuluzee/dependency"
+    if(!file(depPath).exists()){
+        copy {
+            from configurations.compile
+            into depPath
+        }
     }
-}
-jar.enabled = false;
-
-task copyCompileDependencies(type: Copy) {
-    from configurations.compile
-    into project.buildDir.name + "/kumuluzee/dependency"
 }
 
 task copyCompileClasses(type: Copy) {
     from "src/main/resources"
     from "build/classes/java/main"
-    into project.buildDir.name + "/kumuluzee"
+    into project.buildDir.name + "/kumuluzee/classes"
 }
 
 task buildKumuluzEE {

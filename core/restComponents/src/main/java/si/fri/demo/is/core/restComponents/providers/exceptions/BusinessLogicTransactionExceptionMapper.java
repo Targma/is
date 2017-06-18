@@ -1,4 +1,4 @@
-package si.fri.demo.is.app.microservice.rest.providers.exceptions;
+package si.fri.demo.is.core.restComponents.providers.exceptions;
 
 
 import si.fri.demo.is.core.businessLogic.exceptions.BusinessLogicTransactionException;

@@ -1,4 +1,4 @@
-package si.fri.demo.is.app.microservice.rest.providers.configuration;
+package si.fri.demo.is.core.restComponents.providers.configuration;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.DeserializationFeature;
