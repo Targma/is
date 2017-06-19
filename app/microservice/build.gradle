@@ -15,12 +15,32 @@ dependencies {
     testCompile group: 'junit', name: 'junit'
 }
 
+
+String[] modules = [
+        "jpa-" + project.version + ".jar",
+        "restComponents-" + project.version + ".jar",
+        "businessLogic-" + project.version + ".jar"
+]
+
 task copyCompileDependencies() {
-    def depPath = project.buildDir.name + "/kumuluzee/dependency"
-    if(!file(depPath).exists()){
+    def dependencyDir = project.buildDir.name + "/kumuluzee/dependency"
+
+    doLast {
+        if(!file(dependencyDir).exists()){
+            println "Copying all external dependencies."
+            copy {
+                from configurations.compile.filter {
+                    !modules.contains(it.name)
+                }
+                into dependencyDir
+            }
+        }
+        println "Copying all modules as dependency."
         copy {
-            from configurations.compile
-            into depPath
+            from configurations.compile.filter {
+                modules.contains(it.name)
+            }
+            into dependencyDir
         }
     }
 }

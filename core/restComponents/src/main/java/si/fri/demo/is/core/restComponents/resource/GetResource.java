@@ -13,11 +13,21 @@ import javax.annotation.PostConstruct;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
+import javax.ws.rs.core.CacheControl;
+import javax.ws.rs.core.EntityTag;
 import javax.ws.rs.core.Response;
 
 public abstract class GetResource<T extends BaseEntity> extends BaseResource {
 
     protected int defaultMaxLimit = 50;
+
+    protected boolean listCacheControl = false;
+    protected boolean listCacheControlPrivate = true;
+    protected int listCacheControlMaxAge = 60;
+
+    protected boolean getCacheControl = false;
+    protected boolean getCacheControlPrivate = true;
+    protected int getCacheControlMaxAge = 180;
 
     protected Class<T> type;
 
@@ -49,7 +59,13 @@ public abstract class GetResource<T extends BaseEntity> extends BaseResource {
 
         Paging<T> paging = getDatabaseService().get(type, param, authorizationManager);
 
-        return buildResponse(paging);
+        Response.ResponseBuilder rb =  buildResponse(paging);
+
+        if(listCacheControl){
+            rb.cacheControl(buildCacheControl(listCacheControlMaxAge, listCacheControlPrivate));
+        }
+
+        return rb.build();
     }
 
 
@@ -59,23 +75,40 @@ public abstract class GetResource<T extends BaseEntity> extends BaseResource {
 
         T dbEntity = getDatabaseService().get(type, id, authorizationManager);
 
-        return buildResponse(dbEntity, true, false);
+        EntityTag tag = dbEntity.getEntityTag();
+
+        Response.ResponseBuilder rb = request.evaluatePreconditions(tag);
+        if(rb == null){
+            rb = buildResponse(dbEntity, true, false);
+            rb.tag(tag);
+        }
+
+        if(getCacheControl){
+            rb.cacheControl(buildCacheControl(getCacheControlMaxAge, getCacheControlPrivate));
+        }
+        return rb.build();
     }
 
+    protected CacheControl buildCacheControl(int maxAge, boolean isPrivate){
+        CacheControl cc = new CacheControl();
+        cc.setMaxAge(maxAge);
+        cc.setPrivate(isPrivate);
+        return cc;
+    }
 
-    protected Response buildResponse(T dbEntity) {
+    protected Response.ResponseBuilder buildResponse(T dbEntity) {
         return buildResponse(dbEntity, false, false, null);
     }
 
-    protected Response buildResponse(T dbEntity, Boolean isContentReturned) {
+    protected Response.ResponseBuilder buildResponse(T dbEntity, Boolean isContentReturned) {
         return buildResponse(dbEntity, isContentReturned, false, null);
     }
 
-    protected Response buildResponse(T dbEntity, Boolean isContentReturned, boolean locationHeader) {
+    protected Response.ResponseBuilder buildResponse(T dbEntity, Boolean isContentReturned, boolean locationHeader) {
         return buildResponse(dbEntity, isContentReturned, locationHeader, null);
     }
 
-    protected Response buildResponse(T dbEntity, Boolean isContentReturned, boolean locationHeader, Response.Status status) {
+    protected Response.ResponseBuilder buildResponse(T dbEntity, Boolean isContentReturned, boolean locationHeader, Response.Status status) {
 
         Response.ResponseBuilder responseBuilder = Response.status(Response.Status.NO_CONTENT);
 
@@ -93,16 +126,16 @@ public abstract class GetResource<T extends BaseEntity> extends BaseResource {
             responseBuilder.header("Location", locationValue);
         }
 
-        return responseBuilder.build();
+        return responseBuilder;
     }
 
-    protected Response buildResponse(Paging<T> paging){
+    protected Response.ResponseBuilder buildResponse(Paging<T> paging){
 
         Response.ResponseBuilder responseBuilder = Response.status(Response.Status.OK);
         responseBuilder.header("X-Count", paging.getCount());
         responseBuilder.entity(paging.getItems());
 
-        return responseBuilder.build();
+        return responseBuilder;
     }
 
     public AuthorizationManager<T> getAuthorizationManager() {

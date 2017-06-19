@@ -34,10 +34,6 @@ ext {
     liquibase_database_username = 'postgres'
     liquibase_database_password = 'root'
 
-    liquibase_diff_database_name = ext.database_name +'_diff'
-    liquibase_diff_database_username = ext.liquibase_database_username
-    liquibase_diff_database_password = ext.liquibase_database_password
-
     liquibase_test_database_name = ext.database_name + '_test'
     liquibase_test_database_username = ext.liquibase_database_username
     liquibase_test_database_password = ext.liquibase_database_password
@@ -63,22 +59,15 @@ liquibase {
             username project.liquibase_database_username
             password project.liquibase_database_password
         }
-        diffAct {
-            driver project.liquibase_driver
-            changeLogFile projectDir.path + project.liquibase_dir + '/changelogs.groovy'
-            url project.liquibase_postgres_url + project.liquibase_diff_database_name
-            username project.liquibase_diff_database_username
-            password project.liquibase_diff_database_password
-        }
         genDiffAct {
             driver project.liquibase_driver
             changeLogFile projectDir.path + project.liquibase_dir + '/changelog-diff.groovy'
             url project.liquibase_postgres_url + project.liquibase_database_name
             username project.liquibase_database_username
             password project.liquibase_database_password
-            referenceUrl project.liquibase_postgres_url + project.liquibase_diff_database_name
-            referenceUsername project.liquibase_diff_database_username
-            referencePassword project.liquibase_diff_database_password
+            referenceUrl project.liquibase_postgres_url + project.liquibase_test_database_name
+            referenceUsername project.liquibase_test_database_username
+            referencePassword project.liquibase_test_database_password
         }
         testAct {
             driver project.liquibase_driver
@@ -123,10 +112,6 @@ task testInit {
     liquibaseDropAll.finalizedBy liquibaseUpdate
 }
 
-task testTest {
-    liquibaseDropAll
-}
-
 task testImport {
     dependsOn setRunTestImpAct
     dependsOn liquibaseUpdate
@@ -145,11 +130,6 @@ task initMainDatabase(type:Exec) {
     commandLine 'cmd', '/c', getCreateDatabaseCommand(project.liquibase_database_name)
 }
 
-task initDiffDatabase(type:Exec) {
-    workingDir project.database_bin
-    commandLine 'cmd', '/c', getCreateDatabaseCommand(project.liquibase_database_name)
-}
-
 task initTestDatabase(type:Exec) {
     workingDir project.database_bin
     commandLine 'cmd', '/c', getCreateDatabaseCommand(project.liquibase_database_name)
@@ -157,6 +137,5 @@ task initTestDatabase(type:Exec) {
 
 task initAllDatabases() {
     dependsOn initMainDatabase
-    dependsOn initDiffDatabase
     dependsOn initTestDatabase
 }

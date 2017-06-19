@@ -22,7 +22,7 @@ public class UserResourceTest extends LoginResourceTest<User, ISLoginCrudResourc
     @Override
     protected User buildPutEntity(User dbUser) {
         User user = (User) dbUser.cloneObject();
-        user.setName(getMaxLength(dbUser.getName(), NAME_STR_LEN) +" PUT");
+        user.setName(getMaxLength(dbUser.getName(), NAME_STR_LEN) +" PUT"  + (int)(Math.random() * 100));
         return user;
     }
 
@@ -30,7 +30,7 @@ public class UserResourceTest extends LoginResourceTest<User, ISLoginCrudResourc
     protected User buildPatchEntity(User dbUser) {
         User user = new User();
         user.setId(dbUser.getId());
-        user.setName(getMaxLength(dbUser.getName(), NAME_STR_LEN) + " PATCH");
+        user.setName(getMaxLength(dbUser.getName(), NAME_STR_LEN) + " PATCH"  + (int)(Math.random() * 100));
         return user;
     }
 

@@ -4,6 +4,7 @@ package si.fri.demo.is.core.jpa.entities.base;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import javax.persistence.*;
+import javax.ws.rs.core.EntityTag;
 import java.io.Serializable;
 import java.lang.reflect.Field;
 import java.math.BigDecimal;
@@ -316,6 +317,10 @@ public abstract class BaseEntity<T extends BaseEntity> implements Serializable {
         }
     }
 
+    @JsonIgnore
+    public EntityTag getEntityTag() {
+        return new EntityTag(Long.toString(editedOn.getTime()));
+    }
 
     public Integer getId() {
         return id;

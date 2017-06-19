@@ -6,7 +6,9 @@ import org.apache.http.client.methods.HttpPatch;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpPut;
 import si.fri.demo.is.api.ISApiCore;
-import si.fri.demo.is.api.data.EntityData;
+import si.fri.demo.is.api.data.request.IdRequest;
+import si.fri.demo.is.api.data.response.EntityResponse;
+import si.fri.demo.is.api.data.request.EntityRequest;
 import si.fri.demo.is.api.exception.ISApiException;
 import si.fri.demo.is.core.jpa.entities.base.BaseEntity;
 
@@ -16,15 +18,16 @@ public class ISCrudResource<T extends BaseEntity> extends ISGetResource<T> {
         super(client, type);
     }
 
-    public EntityData<T> post(T item) throws ISApiException {
-        return post(item, isContentHeaderAdded());
+    public EntityResponse<T> post(T item) throws ISApiException {
+        return post(new EntityRequest<T>(item, isContentHeaderAdded()));
     }
-    public EntityData<T> post(T item, boolean contentHeader) throws ISApiException {
+    public EntityResponse<T> post(EntityRequest<T> apiRequest) throws ISApiException {
+        T item = apiRequest.getEntity();
         checkEntity(item, true);
 
         String url = endpointUrl;
         HttpPost post = new HttpPost(url);
-        setHeaders(post, contentHeader);
+        setHeaders(post, apiRequest);
         post.setEntity(buildJsonContent(item));
 
         HttpResponse response = core.getClient().execute(post);
@@ -32,15 +35,16 @@ public class ISCrudResource<T extends BaseEntity> extends ISGetResource<T> {
         return buildVcgEntity(response);
     }
 
-    public EntityData<T> put(T item) throws ISApiException {
-        return put(item, isContentHeaderAdded());
+    public EntityResponse<T> put(T item) throws ISApiException {
+        return put(new EntityRequest<T>(item, isContentHeaderAdded()));
     }
-    public EntityData<T> put(T item, boolean contentHeader) throws ISApiException {
+    public EntityResponse<T> put(EntityRequest<T> apiRequest) throws ISApiException {
+        T item = apiRequest.getEntity();
         checkEntity(item);
 
         String url = endpointUrl + "/" + item.getId();
         HttpPut put = new HttpPut(url);
-        setHeaders(put, contentHeader);
+        setHeaders(put, apiRequest);
         put.setEntity(buildJsonContent(item));
 
         HttpResponse response = core.getClient().execute(put);
@@ -48,15 +52,16 @@ public class ISCrudResource<T extends BaseEntity> extends ISGetResource<T> {
         return buildVcgEntity(response);
     }
 
-    public EntityData<T> patch(T item) throws ISApiException {
-        return patch(item, isContentHeaderAdded());
+    public EntityResponse<T> patch(T item) throws ISApiException {
+        return patch(new EntityRequest<T>(item, isContentHeaderAdded()));
     }
-    public EntityData<T> patch(T item, boolean contentHeader) throws ISApiException {
+    public EntityResponse<T> patch(EntityRequest<T> apiRequest) throws ISApiException {
+        T item = apiRequest.getEntity();
         checkEntity(item);
 
         String url = endpointUrl + "/" + item.getId();
         HttpPatch patch = new HttpPatch(url);
-        setHeaders(patch, contentHeader);
+        setHeaders(patch, apiRequest);
         patch.setEntity(buildJsonContent(item));
 
         HttpResponse response = core.getClient().execute(patch);
@@ -64,30 +69,32 @@ public class ISCrudResource<T extends BaseEntity> extends ISGetResource<T> {
         return buildVcgEntity(response);
     }
 
-    public EntityData<T> delete(Integer id) throws ISApiException {
-        return delete(id, isContentHeaderAdded());
+    public EntityResponse<T> delete(Integer id) throws ISApiException {
+        return delete(new IdRequest(id, isContentHeaderAdded()));
     }
-    public EntityData<T> delete(Integer id, boolean contentHeader) throws ISApiException {
+    public EntityResponse<T> delete(IdRequest apiRequest) throws ISApiException {
+        Integer id = apiRequest.getId();
         checkId(id);
 
         String url = endpointUrl + "/" + id;
         HttpDelete delete = new HttpDelete(url);
-        setHeaders(delete, contentHeader);
+        setHeaders(delete, apiRequest);
 
         HttpResponse response = core.getClient().execute(delete);
 
         return buildVcgEntity(response);
     }
 
-    public EntityData<T> toggleIsDeleted(Integer id) throws ISApiException {
-        return toggleIsDeleted(id, isContentHeaderAdded());
+    public EntityResponse<T> toggleIsDeleted(Integer id) throws ISApiException {
+        return toggleIsDeleted(new IdRequest(id, isContentHeaderAdded()));
     }
-    public EntityData<T> toggleIsDeleted(Integer id, boolean contentHeader) throws ISApiException {
+    public EntityResponse<T> toggleIsDeleted(IdRequest apiRequest) throws ISApiException {
+        Integer id = apiRequest.getId();
         checkId(id);
 
         String url = endpointUrl + "/" + id + "/toggleIsDeleted";
         HttpPut put = new HttpPut(url);
-        setHeaders(put, contentHeader);
+        setHeaders(put, apiRequest);
 
         HttpResponse response = core.getClient().execute(put);
 
@@ -96,17 +103,5 @@ public class ISCrudResource<T extends BaseEntity> extends ISGetResource<T> {
 
 
 
-    private void checkEntity(T entity) throws ISApiException{
-        checkEntity(entity, false);
-    }
 
-    private void checkEntity(T entity, boolean idNullable) throws ISApiException {
-        if(entity == null){
-            throw new ISApiException("Entity can not be null");
-        } else {
-            if(!idNullable && entity.getId() == null) {
-                throw new ISApiException("Entity id can not be null");
-            }
-        }
-    }
 }

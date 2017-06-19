@@ -1,26 +1,27 @@
-package si.fri.demo.is.api.data;
+package si.fri.demo.is.api.data.response;
 
-import si.fri.demo.is.api.data.base.BaseData;
+import si.fri.demo.is.api.data.RequestException;
+import si.fri.demo.is.api.data.response.base.ISApiBaseResponse;
 
 import javax.ws.rs.core.Response;
 import java.util.List;
 
-public class PagingData<T> extends BaseData {
+public class PagingResponse<T> extends ISApiBaseResponse {
 
     private Integer count = 0;
     private List<T> items;
 
-    public PagingData(Response.Status status){
+    public PagingResponse(Response.Status status){
         super(status);
     }
 
-    public PagingData(Response.Status status, List<T> items, Integer count){
+    public PagingResponse(Response.Status status, List<T> items, Integer count){
         super(status);
         this.items = items;
         this.count = count;
     }
 
-    public PagingData(Response.Status status, RequestException e){
+    public PagingResponse(Response.Status status, RequestException e){
         super(status);
         this.isApiException = e;
     }

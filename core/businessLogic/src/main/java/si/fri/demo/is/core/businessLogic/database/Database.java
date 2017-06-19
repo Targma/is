@@ -145,9 +145,11 @@ public class Database implements DatabaseImpl {
             }
 
             return o;
+        } catch (BusinessLogicTransactionException e){
+            throw e;
         } catch (Exception e){
             throw new BusinessLogicTransactionException(Response.Status.INTERNAL_SERVER_ERROR,
-                    "Could not find " + c.getClass().getSimpleName() + " with id: " + id, e);
+                    "Error finding entity with id: " + id, e);
         }
     }
 
@@ -427,7 +429,7 @@ public class Database implements DatabaseImpl {
 
             validateEntity(newEntityVersion);
             if(validationManager != null){
-                validationManager.createValidate(newEntityVersion, this);
+                validationManager.updateValidate(newEntityVersion, this);
             }
 
             entityManager.persist(newEntityVersion);
@@ -474,12 +476,14 @@ public class Database implements DatabaseImpl {
 
             validateEntity(newEntityVersion);
             if(validationManager != null){
-                validationManager.createValidate(newEntityVersion, this);
+                validationManager.patchValidate(newEntityVersion, this);
             }
 
             entityManager.persist(newEntityVersion);
 
             return newEntityVersion;
+        } catch (BusinessLogicTransactionException e){
+            throw e;
         } catch (Exception e){
             throw new BusinessLogicTransactionException(Response.Status.INTERNAL_SERVER_ERROR, "Could not update entity generically", e);
         }

@@ -2,9 +2,11 @@ package si.fri.demo.is.core.restComponents.resource;
 
 import si.fri.demo.is.core.businessLogic.exceptions.BusinessLogicTransactionException;
 import si.fri.demo.is.core.jpa.entities.base.BaseEntity;
+import si.fri.demo.is.core.restComponents.managers.ETagValidationManager;
 import si.fri.demo.is.core.restComponents.providers.configuration.PATCH;
 
 import javax.ws.rs.*;
+import javax.ws.rs.core.Request;
 import javax.ws.rs.core.Response;
 
 
@@ -21,7 +23,7 @@ public abstract class CrudResource<T extends BaseEntity> extends GetResource<T> 
 
         T dbEntity = getDatabaseService().create(entity, authorizationManager, validationManager);
 
-        return buildResponse(dbEntity, xContent, false, Response.Status.CREATED);
+        return buildResponse(dbEntity, xContent, false, Response.Status.CREATED).build();
     }
 
     @PUT
@@ -32,7 +34,7 @@ public abstract class CrudResource<T extends BaseEntity> extends GetResource<T> 
 
         T dbEntity = getDatabaseService().update(newObject, authorizationManager, validationManager);
 
-        return buildResponse(dbEntity, xContent);
+        return buildResponse(dbEntity, xContent).build();
     }
 
     @PATCH
@@ -43,7 +45,7 @@ public abstract class CrudResource<T extends BaseEntity> extends GetResource<T> 
 
         T dbEntity = getDatabaseService().patch(entity, authorizationManager, validationManager);
 
-        return buildResponse(dbEntity, xContent);
+        return buildResponse(dbEntity, xContent).build();
     }
 
     @DELETE
@@ -53,7 +55,7 @@ public abstract class CrudResource<T extends BaseEntity> extends GetResource<T> 
 
         T dbEntity = getDatabaseService().delete(type, id, authorizationManager, validationManager);
 
-        return buildResponse(dbEntity, xContent);
+        return buildResponse(dbEntity, xContent).build();
     }
 
     @PUT
@@ -63,6 +65,18 @@ public abstract class CrudResource<T extends BaseEntity> extends GetResource<T> 
 
         T dbEntity = getDatabaseService().toggleIsDeleted(type, id, authorizationManager, validationManager);
 
-        return buildResponse(dbEntity, xContent);
+        return buildResponse(dbEntity, xContent).build();
+    }
+
+    @Override
+    protected void initManagers() {
+        if(getCacheControl) {
+            this.validationManager = new ETagValidationManager<T>() {
+                @Override
+                protected Request getRequest() {
+                    return request;
+                }
+            };
+        }
     }
 }

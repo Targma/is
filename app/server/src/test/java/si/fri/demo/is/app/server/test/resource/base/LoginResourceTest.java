@@ -1,7 +1,7 @@
 package si.fri.demo.is.app.server.test.resource.base;
 
 import org.junit.Assert;
-import si.fri.demo.is.api.data.EntityData;
+import si.fri.demo.is.api.data.response.EntityResponse;
 import si.fri.demo.is.api.exception.ISApiException;
 import si.fri.demo.is.api.resource.base.ISCrudResource;
 import si.fri.demo.is.api.resource.expand.ISLoginCrudResource;
@@ -12,13 +12,13 @@ public abstract class LoginResourceTest<T extends BaseEntity, B extends ISCrudRe
     protected static int NAME_STR_LEN = 10;
 
     @Override
-    public EntityData<T> testPost(T entity) throws ISApiException, IllegalAccessException {
+    public EntityResponse<T> testPost(T entity) throws ISApiException, IllegalAccessException {
         return testLogin();
     }
 
-    public EntityData<T> testLogin() throws ISApiException {
+    public EntityResponse<T> testLogin() throws ISApiException {
 
-        EntityData<T> entityData = ((ISLoginCrudResource) resource).login();
+        EntityResponse<T> entityData = ((ISLoginCrudResource) resource).login();
 
         Assert.assertTrue(entityData.isStatusValid());
 

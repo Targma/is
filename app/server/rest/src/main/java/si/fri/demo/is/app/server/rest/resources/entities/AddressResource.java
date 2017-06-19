@@ -256,6 +256,7 @@ public class AddressResource extends CrudVersionResource<Address> {
 
     @Override
     protected void initManagers() {
+        super.initManagers();
         authorizationManager = new AuthorizationManager<Address>(getAuthorizedEntity()) {
 
             @Override

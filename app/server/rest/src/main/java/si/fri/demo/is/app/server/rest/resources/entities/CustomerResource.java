@@ -52,18 +52,34 @@ public class CustomerResource extends CrudVersionResource<Customer> {
         super(Customer.class);
     }
 
-
+    @ApiOperation(
+        value = SwaggerConstants.LOGIN_VALUE + "customer.",
+        notes = SwaggerConstants.LOGIN_NOTE,
+        authorizations = {
+            @Authorization(
+                value = SwaggerConstants.AUTH_VALUE,
+                scopes = {
+                    @AuthorizationScope(
+                        scope = ROLE_CUSTOMER,
+                        description = SwaggerConstants.AUTH_ROLE_CUSTOMER_DESC)
+                    }
+                )
+            })
+    @ApiResponses({
+            @ApiResponse(code = HttpServletResponse.SC_OK, message = SwaggerConstants.STATUS_OK_DESC, response = User.class),
+            @ApiResponse(code = HttpServletResponse.SC_FORBIDDEN, message = SwaggerConstants.STATUS_FORBIDDEN_DESC)
+    })
     @RolesAllowed(ROLE_CUSTOMER)
     @GET
     @Path("login")
     public Response loginUserInfo() throws BusinessLogicTransactionException {
         Customer customer = customerService.get(getAuthorizedEntity());
-        return buildResponse(customer, true, true);
+        return buildResponse(customer, true, true).build();
     }
 
 
     @ApiOperation(
-            value = SwaggerConstants.GET_LIST_VALUE + "users.",
+            value = SwaggerConstants.GET_LIST_VALUE + "customers.",
             notes = SwaggerConstants.GET_LIST_NOTE,
             authorizations = {
                     @Authorization(
@@ -99,7 +115,7 @@ public class CustomerResource extends CrudVersionResource<Customer> {
 
 
     @ApiOperation(
-            value = SwaggerConstants.GET_VALUE + "user.",
+            value = SwaggerConstants.GET_VALUE + "customer.",
             notes = SwaggerConstants.GET_NOTE,
             authorizations = { @Authorization(
                     value = SwaggerConstants.AUTH_VALUE,
@@ -128,7 +144,7 @@ public class CustomerResource extends CrudVersionResource<Customer> {
 
 
     @ApiOperation(
-            value = SwaggerConstants.CREATE_VERSION_VALUE + "user.",
+            value = SwaggerConstants.CREATE_VERSION_VALUE + "customer.",
             notes = SwaggerConstants.CREATE_VERSION_NOTE,
             authorizations = {
                     @Authorization(
@@ -155,7 +171,7 @@ public class CustomerResource extends CrudVersionResource<Customer> {
 
 
     @ApiOperation(
-            value = SwaggerConstants.PUT_VERSION_VALUE + "user.",
+            value = SwaggerConstants.PUT_VERSION_VALUE + "customer.",
             notes = SwaggerConstants.PUT_VERSION_NOTE,
             authorizations = {
                     @Authorization(
@@ -185,7 +201,7 @@ public class CustomerResource extends CrudVersionResource<Customer> {
 
 
     @ApiOperation(
-            value = SwaggerConstants.PATCH_VERSION_VALUE + "user.",
+            value = SwaggerConstants.PATCH_VERSION_VALUE + "customer.",
             notes = SwaggerConstants.PATCH_VERSION_NOTE,
             authorizations = {
                     @Authorization(
@@ -214,7 +230,7 @@ public class CustomerResource extends CrudVersionResource<Customer> {
 
 
     @ApiOperation(
-            value = SwaggerConstants.DELETE_VERSION_VALUE + "user.",
+            value = SwaggerConstants.DELETE_VERSION_VALUE + "customer.",
             notes = SwaggerConstants.DELETE_VERSION_NOTE,
             authorizations = {
                     @Authorization(
@@ -242,7 +258,7 @@ public class CustomerResource extends CrudVersionResource<Customer> {
 
 
     @ApiOperation(
-            value = SwaggerConstants.TOGGLE_DELETE_VERSION_VALUE + "user.",
+            value = SwaggerConstants.TOGGLE_DELETE_VERSION_VALUE + "customer.",
             notes = SwaggerConstants.TOGGLE_DELETE_VERSION_NOTE,
             authorizations = {
                     @Authorization(
@@ -270,6 +286,7 @@ public class CustomerResource extends CrudVersionResource<Customer> {
 
     @Override
     protected void initManagers() {
+        super.initManagers();
         authorizationManager = new AuthorizationManager<Customer>(getAuthorizedEntity()) {
 
             @Override

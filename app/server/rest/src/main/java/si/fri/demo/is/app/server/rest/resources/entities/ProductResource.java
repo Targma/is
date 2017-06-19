@@ -40,6 +40,12 @@ public class ProductResource extends CrudVersionResource<Product> {
 
     public ProductResource() {
         super(Product.class);
+
+        getCacheControl = true;
+        getCacheControlPrivate = false;
+
+        listCacheControl = true;
+        listCacheControlPrivate = false;
     }
 
 

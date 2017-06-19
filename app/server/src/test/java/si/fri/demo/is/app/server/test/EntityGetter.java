@@ -3,8 +3,9 @@ package si.fri.demo.is.app.server.test;
 import org.junit.Assert;
 import si.fri.demo.is.api.ISApi;
 import si.fri.demo.is.api.client.utility.QueryParamBuilder;
-import si.fri.demo.is.api.data.EntityData;
-import si.fri.demo.is.api.data.PagingData;
+import si.fri.demo.is.api.data.request.EntityRequest;
+import si.fri.demo.is.api.data.response.EntityResponse;
+import si.fri.demo.is.api.data.response.PagingResponse;
 import si.fri.demo.is.api.exception.ISApiException;
 import si.fri.demo.is.app.server.test.resource.AddressResourceTest;
 import si.fri.demo.is.app.server.test.resource.ProductResourceTest;
@@ -25,7 +26,7 @@ public class EntityGetter {
 
     public Customer getCustomer(){
         try {
-            EntityData<Customer> entityData = api.customer.login();
+            EntityResponse<Customer> entityData = api.customer.login();
             Assert.assertTrue(entityData.isStatusValid());
             return entityData.getItem();
         } catch (ISApiException e) {
@@ -41,13 +42,14 @@ public class EntityGetter {
                 QueryParamBuilder queryParamBuilder = new QueryParamBuilder();
                 queryParamBuilder.addEqCond("customer.originId", String.valueOf(customer.getOriginId()));
 
-                PagingData<Address> entityData = api.address.get(queryParamBuilder.buildQuery());
+                PagingResponse<Address> entityData = api.address.get(queryParamBuilder.buildQuery());
 
                 Assert.assertTrue(entityData.isStatusValid());
                 if(entityData.getCount() > 0){
                     return entityData.getItems().get(0);
                 } else {
-                    EntityData<Address> addressEntityData = api.address.post(AddressResourceTest.buildAddress(), true);
+                    EntityRequest<Address> request = new EntityRequest<Address>(AddressResourceTest.buildAddress(), true);
+                    EntityResponse<Address> addressEntityData = api.address.post(request);
                     return addressEntityData.getItem();
                 }
             } catch (ISApiException e) {
@@ -60,13 +62,14 @@ public class EntityGetter {
     public List<Product> getProduct() {
         try {
             QueryParamBuilder queryParamBuilder = new QueryParamBuilder();
-            PagingData<Product> entityData = api.product.get(queryParamBuilder.buildQuery());
+            PagingResponse<Product> entityData = api.product.get(queryParamBuilder.buildQuery());
 
             Assert.assertTrue(entityData.isStatusValid());
             if(entityData.getCount() > 0) {
                 return entityData.getItems();
             } else {
-                EntityData<Product> productEntityData = api.product.post(ProductResourceTest.buildProduct(), true);
+                EntityRequest<Product> request = new EntityRequest<Product>(ProductResourceTest.buildProduct(), true);
+                EntityResponse<Product> productEntityData = api.product.post(request);
                 List<Product> productList = new ArrayList<Product>();
                 productList.add(productEntityData.getItem());
                 return productList;

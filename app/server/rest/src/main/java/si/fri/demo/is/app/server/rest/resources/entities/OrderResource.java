@@ -145,11 +145,12 @@ public class OrderResource extends GetResource<Order> {
 
         Order dbEntity = orderService.process(order);
 
-        return buildResponse(dbEntity, xContent, false, Response.Status.CREATED);
+        return buildResponse(dbEntity, xContent, false, Response.Status.CREATED).build();
     }
 
     @Override
     protected void initManagers() {
+        super.initManagers();
         authorizationManager = new AuthorizationManager<Order>(getAuthorizedEntity()) {
 
             @Override

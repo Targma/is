@@ -50,12 +50,29 @@ public class UserResource extends CrudResource<User> {
 
 
 
+    @ApiOperation(
+            value = SwaggerConstants.LOGIN_VALUE + "user.",
+            notes = SwaggerConstants.LOGIN_NOTE,
+            authorizations = {
+                    @Authorization(
+                            value = SwaggerConstants.AUTH_VALUE,
+                            scopes = {
+                                    @AuthorizationScope(
+                                            scope = ROLE_ADMINISTRATOR,
+                                            description = SwaggerConstants.AUTH_ROLE_ADMIN_DESC)
+                            }
+                    )
+            })
+    @ApiResponses({
+            @ApiResponse(code = HttpServletResponse.SC_OK, message = SwaggerConstants.STATUS_OK_DESC, response = User.class),
+            @ApiResponse(code = HttpServletResponse.SC_FORBIDDEN, message = SwaggerConstants.STATUS_FORBIDDEN_DESC)
+    })
     @RolesAllowed(ROLE_ADMINISTRATOR)
     @GET
     @Path("login")
     public Response loginUserInfo() throws BusinessLogicTransactionException {
         User user = userService.get(getAuthorizedEntity());
-        return buildResponse(user, true, true);
+        return buildResponse(user, true, true).build();
     }
 
 
@@ -262,6 +279,7 @@ public class UserResource extends CrudResource<User> {
 
     @Override
     protected void initManagers() {
+        super.initManagers();
         authorizationManager = new AuthorizationManager<User>(getAuthorizedEntity()) {
 
             @Override

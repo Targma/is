@@ -2,6 +2,9 @@ package si.fri.demo.is.core.restComponents.utility;
 
 public class SwaggerConstants {
 
+    public static final String LOGIN_VALUE = "Returns logged in ";
+    public static final String LOGIN_NOTE = "Returns logged in ";
+
     public static final String GET_LIST_VALUE = "Returns list of ";
     public static final String GET_LIST_NOTE = "Supports searching using query params.";
     public static final String GET_LIST_CONTAINER = "List";

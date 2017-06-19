@@ -10,9 +10,10 @@ import org.apache.http.HttpResponse;
 import org.apache.http.entity.StringEntity;
 import si.fri.demo.is.api.ISApiCore;
 import si.fri.demo.is.api.client.authorization.provider.base.ISApiAuthProvider;
-import si.fri.demo.is.api.data.EntityData;
-import si.fri.demo.is.api.data.PagingData;
 import si.fri.demo.is.api.data.RequestException;
+import si.fri.demo.is.api.data.request.base.ISApiBaseRequest;
+import si.fri.demo.is.api.data.response.EntityResponse;
+import si.fri.demo.is.api.data.response.PagingResponse;
 import si.fri.demo.is.api.exception.ISApiException;
 import si.fri.demo.is.core.jpa.entities.base.BaseEntity;
 
@@ -67,22 +68,35 @@ public abstract class ISResource<T extends BaseEntity> {
         return sb.toString();
     }
 
-    private String getLocationHeaderValue(HttpResponse response){
-        Header[] headers = response.getHeaders("Location");
-        if(headers.length == 1) {
-            return headers[0].getValue();
+    private <T> void getEntityResponseHeaders(HttpResponse response, EntityResponse<T> entityData) {
+        Header[] locationHeader = response.getHeaders("Location");
+        if(locationHeader.length == 1) {
+            entityData.setLocationHeader(locationHeader[0].getValue());
         }
-        return null;
+
+        Header[] eTagHeader = response.getHeaders("ETag");
+        if(eTagHeader.length == 1) {
+            entityData.seteTagHeader(eTagHeader[0].getValue());
+        }
     }
 
-    protected <P> EntityData<P> buildVcgEntityByClass(HttpResponse response, Class<P> classType){
+    private <T> void getPagingResponseHeaders(HttpResponse response, PagingResponse<T> pagingData){
+        Header[] xCountHeader = response.getHeaders("X-Count");
+        if(xCountHeader.length == 1){
+            int count = Integer.parseInt(xCountHeader[0].getValue());
+            pagingData.setCount(count);
+        }
+    }
+
+    protected <P> EntityResponse<P> buildVcgEntityByClass(HttpResponse response, Class<P> classType){
         return buildVcgEntityByClass(response, mapper.getTypeFactory().constructType(classType));
     }
 
-    protected <P> EntityData<P> buildVcgEntityByClass(HttpResponse response, JavaType classType){
+    protected <P> EntityResponse<P> buildVcgEntityByClass(HttpResponse response, JavaType classType){
         Response.Status status = Response.Status.fromStatusCode(response.getStatusLine().getStatusCode());
-        EntityData<P> entityData = new EntityData<P>(status);
-        entityData.setLocation(getLocationHeaderValue(response));
+        EntityResponse<P> entityData = new EntityResponse<P>(status);
+
+        getEntityResponseHeaders(response, entityData);
 
         try {
             String content = buildContent(response);
@@ -104,18 +118,16 @@ public abstract class ISResource<T extends BaseEntity> {
         return entityData;
     }
 
-    protected PagingData<T> buildVcgPaging(HttpResponse response) throws ISApiException {
+    protected PagingResponse<T> buildVcgPaging(HttpResponse response) throws ISApiException {
         Response.Status status = Response.Status.fromStatusCode(response.getStatusLine().getStatusCode());
-        PagingData<T> pagingData = new PagingData<T>(status);
+        PagingResponse<T> pagingData = new PagingResponse<T>(status);
 
         try {
             String content = buildContent(response);
 
             switch (status){
                 case OK:
-                    int count = Integer.parseInt(response.getHeaders("X-Count")[0].getValue());
-                    pagingData.setCount(count);
-
+                    getPagingResponseHeaders(response, pagingData);
                     ArrayList<T> items = mapper.readValue(content, listTypeReference);
                     pagingData.setItems(items);
                     break;
@@ -132,10 +144,11 @@ public abstract class ISResource<T extends BaseEntity> {
         return pagingData;
     }
 
-    protected EntityData<T> buildVcgEntity(HttpResponse response) throws ISApiException {
+    protected EntityResponse<T> buildVcgEntity(HttpResponse response) throws ISApiException {
         Response.Status status = Response.Status.fromStatusCode(response.getStatusLine().getStatusCode());
-        EntityData<T> entityData = new EntityData<T>(status);
-        entityData.setLocation(getLocationHeaderValue(response));
+        EntityResponse<T> entityData = new EntityResponse<T>(status);
+
+        getEntityResponseHeaders(response, entityData);
 
         try {
             String content = buildContent(response);
@@ -162,7 +175,7 @@ public abstract class ISResource<T extends BaseEntity> {
         return entityData;
     }
 
-    protected void setHeaders(HttpRequest request, boolean contentHeader){
+    protected void setHeaders(HttpRequest request, ISApiBaseRequest apiRequest){
         request.addHeader("Accept", "application/json");
         request.addHeader("Content-Type", "application/json; charset=utf-8");
 
@@ -171,8 +184,12 @@ public abstract class ISResource<T extends BaseEntity> {
             request.addHeader("Authorization", "Bearer " + provider.getAuthorizationToken());
         }
 
-        if(contentHeader){
+        if(apiRequest.isxContentHeader()){
             request.addHeader("X-Content", "true");
+        }
+
+        if(apiRequest.geteTagHeader() != null){
+            request.addHeader("ETag", apiRequest.geteTagHeader());
         }
     }
 
@@ -229,5 +246,19 @@ public abstract class ISResource<T extends BaseEntity> {
 
     public void setDefaultContentHeader(boolean defaultContentHeader) {
         this.defaultContentHeader = defaultContentHeader;
+    }
+
+    protected void checkEntity(T entity) throws ISApiException{
+        checkEntity(entity, false);
+    }
+
+    protected void checkEntity(T entity, boolean idNullable) throws ISApiException {
+        if(entity == null){
+            throw new ISApiException("Entity can not be null");
+        } else {
+            if(!idNullable && entity.getId() == null) {
+                throw new ISApiException("Entity id can not be null");
+            }
+        }
     }
 }

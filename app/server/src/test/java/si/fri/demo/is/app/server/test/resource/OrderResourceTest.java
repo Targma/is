@@ -4,7 +4,7 @@ import org.jboss.arquillian.junit.Arquillian;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import si.fri.demo.is.api.data.EntityData;
+import si.fri.demo.is.api.data.response.EntityResponse;
 import si.fri.demo.is.api.exception.ISApiException;
 import si.fri.demo.is.api.resource.custom.OrderCrudResource;
 import si.fri.demo.is.app.server.test.EntityGetter;
@@ -75,7 +75,7 @@ public class OrderResourceTest extends BaseResourceTest<Order, OrderCrudResource
 
         Order order = buildCreateEntity();
 
-        EntityData<Order> orderEntityData = resource.process(order);
+        EntityResponse<Order> orderEntityData = resource.process(order);
         Assert.assertTrue(orderEntityData.isStatusValid());
 
         Assert.assertTrue(Calculation.getTotalAmount(order).compareTo(Calculation.getTotalAmount(orderEntityData.getItem())) == 0);

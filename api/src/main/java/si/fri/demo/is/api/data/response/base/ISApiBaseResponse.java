@@ -1,16 +1,16 @@
-package si.fri.demo.is.api.data.base;
+package si.fri.demo.is.api.data.response.base;
 
 import si.fri.demo.is.api.data.RequestException;
 
 import javax.ws.rs.core.Response;
 
-public abstract class BaseData {
+public abstract class ISApiBaseResponse {
 
     protected Response.Status status;
     protected RequestException isApiException;
 
 
-    public BaseData(Response.Status status) {
+    public ISApiBaseResponse(Response.Status status) {
         this.status = status;
     }
 

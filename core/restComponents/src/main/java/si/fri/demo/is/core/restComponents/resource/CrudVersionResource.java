@@ -2,9 +2,11 @@ package si.fri.demo.is.core.restComponents.resource;
 
 import si.fri.demo.is.core.businessLogic.exceptions.BusinessLogicTransactionException;
 import si.fri.demo.is.core.jpa.entities.base.BaseEntityVersion;
+import si.fri.demo.is.core.restComponents.managers.ETagValidationManager;
 import si.fri.demo.is.core.restComponents.providers.configuration.PATCH;
 
 import javax.ws.rs.*;
+import javax.ws.rs.core.Request;
 import javax.ws.rs.core.Response;
 
 public abstract class CrudVersionResource<T extends BaseEntityVersion> extends GetResource<T> {
@@ -19,7 +21,7 @@ public abstract class CrudVersionResource<T extends BaseEntityVersion> extends G
 
         T dbEntity = getDatabaseService().createVersion(entity, authorizationManager, validationManager);
 
-        return buildResponse(dbEntity, xContent, true, Response.Status.CREATED);
+        return buildResponse(dbEntity, xContent, true, Response.Status.CREATED).build();
     }
 
     @PUT
@@ -30,7 +32,7 @@ public abstract class CrudVersionResource<T extends BaseEntityVersion> extends G
 
         T dbEntity = getDatabaseService().updateVersion(id, entity, authorizationManager, validationManager);
 
-        return buildResponse(dbEntity, xContent, true, Response.Status.CREATED);
+        return buildResponse(dbEntity, xContent, true, Response.Status.CREATED).build();
     }
 
     @PATCH
@@ -41,7 +43,7 @@ public abstract class CrudVersionResource<T extends BaseEntityVersion> extends G
 
         T dbEntity = getDatabaseService().patchVersion(id, entity, authorizationManager, validationManager);
 
-        return buildResponse(dbEntity, xContent, true, Response.Status.CREATED);
+        return buildResponse(dbEntity, xContent, true, Response.Status.CREATED).build();
     }
 
     @DELETE
@@ -51,7 +53,7 @@ public abstract class CrudVersionResource<T extends BaseEntityVersion> extends G
 
         T dbEntity = getDatabaseService().delete(type, id, authorizationManager, validationManager);
 
-        return buildResponse(dbEntity, xContent);
+        return buildResponse(dbEntity, xContent).build();
     }
 
     @PUT
@@ -61,8 +63,18 @@ public abstract class CrudVersionResource<T extends BaseEntityVersion> extends G
 
         T dbEntity = getDatabaseService().toggleIsDeleted(type, id, authorizationManager, validationManager);
 
-        return buildResponse(dbEntity, xContent);
+        return buildResponse(dbEntity, xContent).build();
     }
 
-
+    @Override
+    protected void initManagers() {
+        if(getCacheControl) {
+            this.validationManager = new ETagValidationManager<T>() {
+                @Override
+                protected Request getRequest() {
+                    return request;
+                }
+            };
+        }
+    }
 }

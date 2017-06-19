@@ -17,7 +17,7 @@ public class CustomerResourceTest extends LoginResourceTest<Customer, ISLoginCru
     @Override
     protected Customer buildPutEntity(Customer dbCustomer) {
         Customer customer = (Customer) dbCustomer.cloneObject();
-        customer.setName(getMaxLength(dbCustomer.getName(), NAME_STR_LEN) + " PUT");
+        customer.setName(getMaxLength(dbCustomer.getName(), NAME_STR_LEN) + " PUT " + (int)(Math.random() * 100));
         return customer;
     }
 
@@ -25,7 +25,7 @@ public class CustomerResourceTest extends LoginResourceTest<Customer, ISLoginCru
     protected Customer buildPatchEntity(Customer dbCustomer) {
         Customer customer = new Customer();
         customer.setId(dbCustomer.getId());
-        customer.setName(getMaxLength(dbCustomer.getName(), NAME_STR_LEN) + " PATCH");
+        customer.setName(getMaxLength(dbCustomer.getName(), NAME_STR_LEN) + " PATCH" + (int)(Math.random() * 100));
         return customer;
     }
 

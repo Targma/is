@@ -7,7 +7,7 @@ import si.fri.demo.is.api.ISApi;
 import si.fri.demo.is.api.ISApiConfiguration;
 import si.fri.demo.is.api.client.authorization.provider.KeycloakISAuthProvider;
 import si.fri.demo.is.api.client.authorization.provider.base.KeycloakISConfiguration;
-import si.fri.demo.is.api.data.EntityData;
+import si.fri.demo.is.api.data.response.EntityResponse;
 import si.fri.demo.is.api.exception.ISApiException;
 import si.fri.demo.is.api.resource.base.ISResource;
 import si.fri.demo.is.app.server.test.ISDeployment;
@@ -50,10 +50,10 @@ public abstract class BaseResourceTest<T extends BaseEntity, B extends ISResourc
 
     protected void initUserAndCustomer(){
         try {
-            EntityData<User> userEntityData = api.user.login();
+            EntityResponse<User> userEntityData = api.user.login();
             Assert.assertTrue(userEntityData.isStatusValid());
 
-            EntityData<Customer> customerEntityData = api.customer.login();
+            EntityResponse<Customer> customerEntityData = api.customer.login();
             Assert.assertTrue(customerEntityData.isStatusValid());
 
         } catch (ISApiException e) {
