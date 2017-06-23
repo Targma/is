@@ -89,6 +89,7 @@ public abstract class GetResource<T extends BaseEntity> extends BaseResource {
         return rb.build();
     }
 
+
     protected CacheControl buildCacheControl(int maxAge, boolean isPrivate){
         CacheControl cc = new CacheControl();
         cc.setMaxAge(maxAge);

@@ -1,0 +1,7 @@
+{
+  "app.containers.Login.login": "Login",
+  "app.containers.Logout.header": "Hi {name}"
+}
+
+
+
