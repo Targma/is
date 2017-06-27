@@ -19,6 +19,9 @@ public class Address extends BaseEntityVersion<Address> {
     @Column(length = Constants.DEF_CODE_LEN)
     private String code;
 
+    @Column(length = Constants.DEF_CODE_LEN)
+    private String street;
+
     @ManyToOne(cascade = CascadeType.DETACH)
     @JoinColumn(name = "customer_id", nullable = false)
     private Customer customer;
@@ -26,6 +29,14 @@ public class Address extends BaseEntityVersion<Address> {
 
     public String getCity() {
         return city;
+    }
+
+    public String getStreet() {
+        return street;
+    }
+
+    public void setStreet(String street) {
+        this.street = street;
     }
 
     public void setCity(String city) {

@@ -63,7 +63,6 @@ public class OrderResourceTest extends BaseResourceTest<Order, OrderCrudResource
             productOnOrder.setQuantity(new BigDecimal((int) (Math.random() * 50) + 1));
             productOnOrder.setProduct(randProduct);
             productOnOrder.setOrderNumber(i);
-            productOnOrder.setDiscount(randProduct.getDiscount());
             productOnOrderSet.add(productOnOrder);
         }
 

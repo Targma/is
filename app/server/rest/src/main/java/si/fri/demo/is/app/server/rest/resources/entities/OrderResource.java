@@ -4,6 +4,7 @@ import com.github.tfaga.lynx.beans.QueryFilter;
 import com.github.tfaga.lynx.beans.QueryParameters;
 import com.github.tfaga.lynx.enums.FilterOperation;
 import io.swagger.annotations.*;
+import org.keycloak.KeycloakPrincipal;
 import si.fri.demo.is.app.server.ejb.database.DatabaseServiceLocal;
 import si.fri.demo.is.app.server.ejb.interfaces.OrderServiceLocal;
 import si.fri.demo.is.app.server.rest.resources.utility.AuthUtility;
@@ -40,7 +41,7 @@ public class OrderResource extends GetResource<Order> {
     }
 
     protected AuthEntity getAuthorizedEntity() {
-        return AuthUtility.getAuthorizedEntity(sc.getUserPrincipal());
+        return AuthUtility.getAuthorizedEntity((KeycloakPrincipal) sc.getUserPrincipal());
     }
 
     @EJB

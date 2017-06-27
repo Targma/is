@@ -39,6 +39,7 @@ export default function configureStore(initialState = {}, history) {
   );
 
   // Extensions
+  // sagaMiddleware.run(yourSaga);
   store.runSaga = sagaMiddleware.run;
   store.asyncReducers = {}; // Async reducer registry
 

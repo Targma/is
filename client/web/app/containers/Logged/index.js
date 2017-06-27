@@ -4,26 +4,35 @@ import { FormattedMessage } from 'react-intl';
 import { createStructuredSelector } from 'reselect';
 import { IconMenu, MenuItem, IconButton } from 'material-ui';
 import MoreVertIcon from 'material-ui/svg-icons/navigation/more-vert';
+import { toast } from 'react-toastify';
 import messages from './messages';
 import { makeSelectUser } from '../App/selectors';
+import { toggleAddressDialog } from '../HomePage/actions';
 import { keycloakLogout } from '../../utils/keycloak';
+import AddressCreateDialog from '../AddressCreateDialog';
+
 
 export class Logged extends React.Component { // eslint-disable-line react/prefer-stateless-function
+
+  componentDidMount() {
+    toast(`Hi ${this.props.user.name}`);
+  }
+
   render() {
-    const name = this.props.user.name;
+    const email = this.props.user.email;
     return (
       <div>
-        <FormattedMessage {...messages.hello} values={{ name }} />
         <IconMenu
           iconButtonElement={<IconButton><MoreVertIcon /></IconButton>}
           targetOrigin={{ horizontal: 'right', vertical: 'top' }}
           anchorOrigin={{ horizontal: 'right', vertical: 'top' }}
           iconStyle={{ fill: 'rgba(255, 255, 255, 1)' }}
         >
-          <MenuItem primaryText="Refresh" />
-          <MenuItem primaryText="Help" />
+          <MenuItem disabled primaryText={<FormattedMessage {...messages.loggedAs} values={{ email }} />} />
+          <MenuItem primaryText="Add address" onTouchTap={this.props.toggleDialogOpen} />
           <MenuItem primaryText="Sign out" onTouchTap={keycloakLogout} />
         </IconMenu>
+        <AddressCreateDialog />
       </div>
     );
   }
@@ -31,7 +40,8 @@ export class Logged extends React.Component { // eslint-disable-line react/prefe
 
 Logged.propTypes = {
   user: PropTypes.object,
-  dispatch: PropTypes.func.isRequired,
+  toggleDialogOpen: PropTypes.func,
+
 };
 
 const mapStateToProps = createStructuredSelector({
@@ -40,7 +50,7 @@ const mapStateToProps = createStructuredSelector({
 
 function mapDispatchToProps(dispatch) {
   return {
-    dispatch,
+    toggleDialogOpen: () => dispatch(toggleAddressDialog()),
   };
 }
 

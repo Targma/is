@@ -8,7 +8,7 @@ import {
 
 describe('ProductList actions', () => {
   describe('Default Action', () => {
-    it('has a type of DEFAULT_ACTION', () => {
+    it('has a type of ADD_PRODUCT_IN_BASKET', () => {
       const expected = {
         type: DEFAULT_ACTION,
       };

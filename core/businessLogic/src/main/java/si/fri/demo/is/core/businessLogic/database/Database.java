@@ -103,7 +103,9 @@ public class Database implements DatabaseImpl {
             Long count = JPAUtils.queryEntitiesCount(entityManager, c, param);
 
             return new Paging<T>(items, count);
-        } catch (Exception e){
+        } catch (BusinessLogicTransactionException e){
+            throw e;
+        } catch (Exception e) {
             throw new BusinessLogicTransactionException(Response.Status.INTERNAL_SERVER_ERROR, "Could not process request.", e);
         }
     }
@@ -122,6 +124,8 @@ public class Database implements DatabaseImpl {
             Long count = JPAUtils.queryEntitiesCount(entityManager, c, customFilter);
 
             return new Paging<T>(items, count);
+        } catch (BusinessLogicTransactionException e){
+            throw e;
         } catch (Exception e){
             throw new BusinessLogicTransactionException(Response.Status.INTERNAL_SERVER_ERROR, "Could not process custom filter.", e);
         }
@@ -181,6 +185,8 @@ public class Database implements DatabaseImpl {
             entityManager.persist(newEntity);
 
             return newEntity;
+        } catch (BusinessLogicTransactionException e){
+            throw e;
         } catch (Exception e){
             throw new BusinessLogicTransactionException(Response.Status.BAD_REQUEST, "Couldn't create object type " + newEntity.getClass().getSimpleName(), e);
         }

@@ -10,8 +10,8 @@ export default defineMessages({
     id: 'app.containers.Logout.header',
     defaultMessage: 'Log out',
   },
-  hello: {
-    id: 'app.containers.Logout.header',
-    defaultMessage: 'Hi',
+  loggedAs: {
+    id: 'app.containers.Logout.hello',
+    defaultMessage: 'Logged as {email}',
   },
 });

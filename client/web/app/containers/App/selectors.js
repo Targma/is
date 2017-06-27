@@ -12,6 +12,26 @@ const makeSelectLogged = () => createSelector(
   (globalState) => globalState.get('logged')
 );
 
+const makeSelectIsBasketOpen = () => createSelector(
+  selectGlobal,
+  (globalState) => globalState.get('isBasketOpen')
+);
+
+const makeSelectProductInBasket = () => createSelector(
+  selectGlobal,
+  (globalState) => globalState.get('productsInBasket')
+);
+
+const makeSelectSelectedAddress = () => createSelector(
+  selectGlobal,
+  (globalState) => globalState.get('selectedAddress')
+);
+
+const makeSelectAddresses = () => createSelector(
+  selectGlobal,
+  (globalState) => globalState.get('addresses')
+);
+
 const makeSelectLocationState = () => {
   let prevRoutingState;
   let prevRoutingStateJS;
@@ -33,4 +53,8 @@ export {
   makeSelectUser,
   makeSelectLogged,
   makeSelectLocationState,
+  makeSelectIsBasketOpen,
+  makeSelectProductInBasket,
+  makeSelectSelectedAddress,
+  makeSelectAddresses,
 };

@@ -51,8 +51,6 @@ public class OrderManager extends BaseManager<Order>  {
 
             Product dbProduct = ISValidators.isEntityValid(item.getProduct(), false, database);
             item.setProduct(dbProduct);
-
-            item.setDiscount(dbProduct.getDiscount());
         }
 
         for(Short i=0; i<orderNumbers.size(); i++){

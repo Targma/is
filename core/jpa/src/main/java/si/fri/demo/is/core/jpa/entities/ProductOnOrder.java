@@ -17,9 +17,6 @@ public class ProductOnOrder extends BaseEntity<ProductOnOrder> {
     @Column(precision = Constants.PRECISION, scale = Constants.SCALE, nullable = false)
     protected BigDecimal quantity;
 
-    @Column(precision = Constants.PRECISION, scale = Constants.SCALE, nullable = false)
-    protected BigDecimal discount;
-
     @Column(name = "order_number", nullable = false)
     protected Short orderNumber;
 
@@ -39,14 +36,6 @@ public class ProductOnOrder extends BaseEntity<ProductOnOrder> {
 
     public void setQuantity(BigDecimal quantity) {
         this.quantity = quantity;
-    }
-
-    public BigDecimal getDiscount() {
-        return discount;
-    }
-
-    public void setDiscount(BigDecimal discount) {
-        this.discount = discount;
     }
 
     public Short getOrderNumber() {

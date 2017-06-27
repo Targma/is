@@ -5,6 +5,7 @@ import com.github.tfaga.lynx.beans.QueryFilter;
 import com.github.tfaga.lynx.beans.QueryParameters;
 import com.github.tfaga.lynx.enums.FilterOperation;
 import io.swagger.annotations.*;
+import org.keycloak.KeycloakPrincipal;
 import si.fri.demo.is.app.server.ejb.database.DatabaseServiceLocal;
 import si.fri.demo.is.app.server.rest.resources.utility.AuthUtility;
 import si.fri.demo.is.core.businessLogic.authentication.AuthEntity;
@@ -41,7 +42,7 @@ public class AddressResource extends CrudVersionResource<Address> {
     }
 
     protected AuthEntity getAuthorizedEntity() {
-        return AuthUtility.getAuthorizedEntity(sc.getUserPrincipal());
+        return AuthUtility.getAuthorizedEntity((KeycloakPrincipal) sc.getUserPrincipal());
     }
 
 

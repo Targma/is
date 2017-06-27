@@ -27,7 +27,7 @@ ext {
     database_bin = 'C:/Program Files/PostgreSQL/9.6/bin/'
 
     liquibase_driver = 'org.postgresql.Driver'
-    liquibase_dir = '/src/main/resources/liquibase'
+    liquibase_dir = projectDir.path + '/src/main/resources/liquibase'
     liquibase_postgres_url = 'jdbc:postgresql://localhost:5432/'
 
     liquibase_database_name = ext.database_name
@@ -39,29 +39,24 @@ ext {
     liquibase_test_database_password = ext.liquibase_database_password
 }
 
-if(!ext.has("runList")){
-    ext.runList = 'mainAct'
+String getChangelog(){
+    String changelog = project.liquibase_dir
+    if(ext.has('cl')){
+        switch (project.ext.cl){
+            case 'import':
+                return changelog + '/changelog-import.groovy'
+            case 'diff':
+                return changelog + '/changelog-diff.groovy'
+        }
+    }
+    return changelog + '/changelogs.groovy'
 }
 
 liquibase {
     activities {
-        mainAct {
+        base {
             driver project.liquibase_driver
-            changeLogFile projectDir.path + project.liquibase_dir + '/changelogs.groovy'
-            url project.ext.liquibase_postgres_url + project.liquibase_database_name
-            username project.liquibase_database_username
-            password project.liquibase_database_password
-        }
-        genAct {
-            driver project.liquibase_driver
-            changeLogFile projectDir.path + project.liquibase_dir + '/changelogs-generate.groovy'
-            url project.liquibase_postgres_url + project.liquibase_database_name
-            username project.liquibase_database_username
-            password project.liquibase_database_password
-        }
-        genDiffAct {
-            driver project.liquibase_driver
-            changeLogFile projectDir.path + project.liquibase_dir + '/changelog-diff.groovy'
+            changeLogFile project.liquibase_dir + '/changelogs.groovy'
             url project.liquibase_postgres_url + project.liquibase_database_name
             username project.liquibase_database_username
             password project.liquibase_database_password
@@ -69,53 +64,33 @@ liquibase {
             referenceUsername project.liquibase_test_database_username
             referencePassword project.liquibase_test_database_password
         }
-        testAct {
-            driver project.liquibase_driver
-            changeLogFile projectDir.path + project.liquibase_dir + '/changelogs.groovy'
-            url project.liquibase_postgres_url + project.liquibase_test_database_name
-            username project.liquibase_test_database_username
-            password project.liquibase_test_database_password
-        }
-        testImpAct {
-            driver project.liquibase_driver
-            changeLogFile projectDir.path + project.liquibase_dir + '/changelog-sql.groovy'
-            url project.liquibase_postgres_url + project.liquibase_test_database_name
-            username project.liquibase_test_database_username
-            password project.liquibase_test_database_password
-        }
     }
-    runList = project.ext.runList
+    runList = ext.has('runList') ? project.ext.runList : 'base'
 }
 
-task setRunMainAct { doFirst{ project.ext.runList = 'mainAct' } }
-task setRunTestAct { doFirst { project.liquibase.runList = 'testAct' } }
-task setRunTestImpAct { doFirst { project.liquibase.runList = 'testImpAct' } }
-task setRunGenDiffAct { doFirst { project.liquibase.runList = 'genDiffAct' } }
+task initForDiffChangelog {
+    doFirst {
+        project.ext.cl = 'diff'
+        String changelog = getChangelog()
 
-task deleteDiffChangeLog(type: Delete) {
-    delete project.projectDir.path + '/src/main/resources/liquibase/changelog-diff.groovy'
+        delete changelog
+        liquibase.activities.base.changeLogFile changelog
+    }
 }
 
-task genDiff {
-    dependsOn deleteDiffChangeLog
-    dependsOn setRunGenDiffAct
-    dependsOn liquibaseDiffChangeLog
-    deleteDiffChangeLog.finalizedBy setRunGenDiffAct
-    setRunGenDiffAct.finalizedBy liquibaseDiffChangeLog
+lbDiffChangeLog.dependsOn initForDiffChangelog
+
+task mainDB {
+    doFirst {
+        liquibase.activities.base.changeLogFile getChangelog()
+    }
 }
 
-task testInit {
-    dependsOn setRunTestAct
-    dependsOn liquibaseDropAll
-    dependsOn liquibaseUpdate
-    setRunTestAct.finalizedBy liquibaseDropAll
-    liquibaseDropAll.finalizedBy liquibaseUpdate
-}
-
-task testImport {
-    dependsOn setRunTestImpAct
-    dependsOn liquibaseUpdate
-    setRunTestImpAct.finalizedBy liquibaseUpdate
+task testDB {
+    doFirst {
+        liquibase.activities.base.changeLogFile getChangelog()
+        liquibase.activities.base.url project.liquibase_postgres_url + project.liquibase_test_database_name
+    }
 }
 
 /*
@@ -124,17 +99,14 @@ task testImport {
 String getCreateDatabaseCommand(String db){
     return 'psql -U postgres -tc "SELECT 1 FROM pg_database WHERE datname = \'' + db + '\'" | grep -q 1 || psql -U postgres -c "CREATE DATABASE ' + db + '"'
 }
-
-task initMainDatabase(type:Exec) {
+task initMainDatabase(type: Exec) {
     workingDir project.database_bin
     commandLine 'cmd', '/c', getCreateDatabaseCommand(project.liquibase_database_name)
 }
-
-task initTestDatabase(type:Exec) {
+task initTestDatabase(type: Exec) {
     workingDir project.database_bin
     commandLine 'cmd', '/c', getCreateDatabaseCommand(project.liquibase_database_name)
 }
-
 task initAllDatabases() {
     dependsOn initMainDatabase
     dependsOn initTestDatabase

@@ -1,6 +1,7 @@
 package si.fri.demo.is.app.server.rest.resources.entities;
 
 import io.swagger.annotations.*;
+import org.keycloak.KeycloakPrincipal;
 import si.fri.demo.is.app.server.ejb.database.DatabaseServiceLocal;
 import si.fri.demo.is.app.server.ejb.interfaces.UserServiceLocal;
 import si.fri.demo.is.app.server.rest.resources.utility.AuthUtility;
@@ -37,7 +38,7 @@ public class UserResource extends CrudResource<User> {
     }
 
     protected AuthEntity getAuthorizedEntity() {
-        return AuthUtility.getAuthorizedEntity(sc.getUserPrincipal());
+        return AuthUtility.getAuthorizedEntity((KeycloakPrincipal) sc.getUserPrincipal());
     }
 
 

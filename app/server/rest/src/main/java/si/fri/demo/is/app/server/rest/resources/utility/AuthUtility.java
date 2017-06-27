@@ -5,12 +5,10 @@ import org.keycloak.KeycloakSecurityContext;
 import org.keycloak.representations.AccessToken;
 import si.fri.demo.is.core.businessLogic.authentication.AuthEntity;
 
-import java.security.Principal;
-
 public class AuthUtility {
 
-    public static AuthEntity getAuthorizedEntity(Principal principal) {
-        KeycloakPrincipal<KeycloakSecurityContext> kcPrincipal = (KeycloakPrincipal) principal;
+    public static AuthEntity getAuthorizedEntity(KeycloakPrincipal principal) {
+        KeycloakPrincipal<KeycloakSecurityContext> kcPrincipal = principal;
         AccessToken token = kcPrincipal.getKeycloakSecurityContext().getToken();
 
         AuthEntity authEntity = new AuthEntity();

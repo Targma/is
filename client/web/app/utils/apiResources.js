@@ -53,8 +53,6 @@ function getCustomerLogin() {
 }
 
 function getProducts(search) {
-  console.log(`Called getProduct with search: ${search}`);
-
   const params = {
     where: `isLatest:eq:true|isDeleted:eq:false|title:likeic:%${search}%`,
     limit: '10',
@@ -77,8 +75,55 @@ function getProducts(search) {
     .then(parseJSON);
 }
 
+function getAddresses() {
+  const isConfig = {
+    method: 'GET',
+    headers: buildHeaders(),
+    mode: 'cors',
+    cache: 'default' };
+
+  return fetch(`${RESOURCE_ADDRESS}`, isConfig)
+    .then(checkStatus)
+    .then(parseJSON);
+}
+
+function createAddresses(address) {
+  const headers = buildHeaders();
+  headers.append('X-Content', 'true');
+
+  const isConfig = {
+    method: 'POST',
+    headers,
+    mode: 'cors',
+    cache: 'default',
+    body: JSON.stringify(address) };
+
+  return fetch(`${RESOURCE_ADDRESS}`, isConfig)
+    .then(checkStatus)
+    .then(parseJSON);
+}
+
+function createOrder(order) {
+  const headers = buildHeaders();
+  headers.append('X-Content', 'true');
+
+  const isConfig = {
+    method: 'POST',
+    headers,
+    mode: 'cors',
+    cache: 'default',
+    body: JSON.stringify(order) };
+
+  return fetch(`${RESOURCE_ORDER}/process`, isConfig)
+    .then(checkStatus)
+    .then(parseJSON);
+}
+
 export {
+  setToken,
   getCustomerLogin,
   getProducts,
-  setToken,
+  getAddresses,
+  createAddresses,
+  createOrder,
 };

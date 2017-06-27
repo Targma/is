@@ -24,15 +24,15 @@ public class CustomerManager extends BaseManager<Customer> {
                     .where(e -> e.getAuthenticationId().equals(authId) && e.getIsLatest() && !e.getIsDeleted())
                     .toList();
 
-            Customer customer;
+            Customer dbCustomer;
             if(customerList.isEmpty()){
-                customer = generate(authEntity);
-                database.createVersion(customer, authorizationManager);
+                dbCustomer = generate(authEntity);
+                database.createVersion(dbCustomer, authorizationManager);
             } else {
-                customer = customerList.get(0);
+                dbCustomer = customerList.get(0);
             }
 
-            return customer;
+            return dbCustomer;
         } else {
             throw new BusinessLogicTransactionException(Response.Status.BAD_REQUEST, "Account is not of customer type.");
         }

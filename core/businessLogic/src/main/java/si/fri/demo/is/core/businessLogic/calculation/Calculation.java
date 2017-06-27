@@ -26,7 +26,7 @@ public class Calculation {
     public static BigDecimal getProductOnOrderPrice(ProductOnOrder productOnOrder){
 
         BigDecimal price = getProductPrice(productOnOrder.getProduct());
-        BigDecimal discount = productOnOrder.getDiscount();
+        BigDecimal discount = productOnOrder.getProduct().getDiscount();
         BigDecimal quantity = productOnOrder.getQuantity();
 
         BigDecimal totalPrice = price.multiply(quantity);
