@@ -5,7 +5,6 @@
  */
 
 import {
-  SEARCH_CHANGED,
   SET_FETCHED_PRODUCTS,
   ERROR_FETCHING_PRODUCTS,
   FETCH_PRODUCT,
@@ -15,27 +14,22 @@ import {
   CHANGED_ADDRESS_STREET,
   ADDRESS_DIALOG_CANCEL,
   ADDRESS_DIALOG_SUBMIT,
-  ADDRESS_DIALOG_SUBMIT_SUCESSFUL,
+  ADDRESS_DIALOG_SUBMIT_SUCCESSFUL,
 } from './constants';
 
-export function getProducts(search) {
+export function getProducts(search, pageNumber = 0) {
   return {
     type: FETCH_PRODUCT,
     search,
+    pageNumber,
   };
 }
 
-export function setSearchTitle(searchTitle) {
-  return {
-    type: SEARCH_CHANGED,
-    searchTitle,
-  };
-}
-
-export function setProducts(products) {
+export function setProducts(products, count) {
   return {
     type: SET_FETCHED_PRODUCTS,
     products,
+    count,
   };
 }
 
@@ -87,6 +81,6 @@ export function addressDialogSubmit() {
 
 export function addressDialogSubmitSucessful() {
   return {
-    type: ADDRESS_DIALOG_SUBMIT_SUCESSFUL,
+    type: ADDRESS_DIALOG_SUBMIT_SUCCESSFUL,
   };
 }

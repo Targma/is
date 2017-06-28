@@ -14,11 +14,6 @@ const makeSelectProducts = () => createSelector(
   (homeState) => homeState.get('products')
 );
 
-const makeSelectSearchTitle = () => createSelector(
-  selectProductListDomain,
-  (homeState) => homeState.get('searchTitle')
-);
-
 const makeSelectIsCreateDialogOpen = () => createSelector(
   selectProductListDomain,
   (homeState) => homeState.get('isCreateDialogOpen')
@@ -29,14 +24,9 @@ const makeSelectCreateAddress = () => createSelector(
   (homeState) => homeState.get('createAddress')
 );
 
-const makeSelectPageNumber = () => createSelector(
+const makeSelectProductCount = () => createSelector(
   selectProductListDomain,
-  (homeState) => homeState.get('pageNumber')
-);
-
-const makeSelectPageCount = () => createSelector(
-  selectProductListDomain,
-  (homeState) => homeState.get('pageCount')
+  (homeState) => homeState.get('productCount')
 );
 
 /**
@@ -46,9 +36,7 @@ const makeSelectPageCount = () => createSelector(
 export {
   selectProductListDomain,
   makeSelectProducts,
-  makeSelectSearchTitle,
   makeSelectIsCreateDialogOpen,
   makeSelectCreateAddress,
-  makeSelectPageCount,
-  makeSelectPageNumber,
+  makeSelectProductCount,
 };

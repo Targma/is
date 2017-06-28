@@ -11,6 +11,8 @@ export const RESOURCE_ORDER = `${API_PATH}/Order`;
 export const RESOURCE_USER = `${API_PATH}/User`;
 export const RESOURCE_ADDRESS = `${API_PATH}/Address`;
 
+export const LIMIT = Number(10);
+
 let authorizationToken = '';
 
 function buildHeaders() {
@@ -23,7 +25,7 @@ function buildHeaders() {
 }
 
 function parseJSON(response) {
-  return response.json();
+  return response.json().then((data) => ({ data, headers: response.headers }));
 }
 
 function checkStatus(response) {
@@ -52,11 +54,11 @@ function getCustomerLogin() {
      .then(parseJSON);
 }
 
-function getProducts(search) {
+function getProducts(search, skip = 0) {
   const params = {
     where: `isLatest:eq:true|isDeleted:eq:false|title:likeic:%${search}%`,
-    limit: '10',
-    skip: '0',
+    limit: LIMIT,
+    skip: Number(skip),
   };
 
   const esc = encodeURIComponent;

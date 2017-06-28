@@ -36,11 +36,11 @@ class App extends React.PureComponent { // eslint-disable-line react/prefer-stat
 
   componentDidMount() {
     init(() => {
-      getCustomerLogin().then((customer) => {
-        this.props.login(customer);
+      getCustomerLogin().then((res) => {
+        this.props.login(res.data);
       });
-      getAddresses().then((addresses) => {
-        this.props.setAddresses(addresses);
+      getAddresses().then((res) => {
+        this.props.setAddresses(res.data);
       });
     });
   }

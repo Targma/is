@@ -4,7 +4,6 @@ buildscript {
         maven {
             url "http://www.terracotta.org/download/reflector/releases"
         }
-
     }
     dependencies {
         classpath "io.spring.gradle:dependency-management-plugin:1.0.3.RELEASE"
@@ -24,6 +23,7 @@ allprojects {
 
     repositories {
         mavenCentral()
+        mavenLocal()
     }
 
     dependencyManagement {
