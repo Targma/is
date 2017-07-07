@@ -1,5 +1,6 @@
 package si.fri.demo.is.core.businessLogic.managers;
 
+import si.fri.demo.is.core.businessLogic.authentication.AuthEntity;
 import si.fri.demo.is.core.businessLogic.calculation.Calculation;
 import si.fri.demo.is.core.businessLogic.database.AuthorizationManager;
 import si.fri.demo.is.core.businessLogic.database.Database;
@@ -19,8 +20,11 @@ public class OrderManager extends BaseManager<Order>  {
         super(database, null);
     }
 
-    public Order processOrder(Order order) throws BusinessLogicTransactionException {
+    public Order processOrder(AuthEntity authEntity, Order order) throws BusinessLogicTransactionException {
         try {
+            Customer customer = database.getAuthorizedCustomer(authEntity);
+            order.setCustomer(customer);
+
             validateOrder(order);
             Order dbOrder = persistOrder(order);
 

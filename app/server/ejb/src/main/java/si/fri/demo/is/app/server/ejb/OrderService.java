@@ -25,8 +25,8 @@ public class OrderService extends BaseService implements OrderServiceLocal {
     }
 
     @Override
-    public Order process(Order order) throws BusinessLogicTransactionException {
-        return orderManager.processOrder(order);
+    public Order process(AuthEntity authEntity, Order order) throws BusinessLogicTransactionException {
+        return orderManager.processOrder(authEntity, order);
     }
 
 }

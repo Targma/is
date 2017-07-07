@@ -40,13 +40,13 @@ public class DatabaseService implements DatabaseServiceLocal {
     }
 
     @Override
-    public <T extends BaseEntity> Paging<T> get(Class<T> c, QueryParameters param, AuthorizationManager<T> authorizationManager) throws BusinessLogicTransactionException {
-        return database.get(c, param, authorizationManager);
+    public <T extends BaseEntity> Paging<T> getList(Class<T> c, QueryParameters param, AuthorizationManager<T> authorizationManager) throws BusinessLogicTransactionException {
+        return database.getList(c, param, authorizationManager);
     }
 
     @Override
-    public <T extends BaseEntity> Paging<T> get(Class<T> c, CriteriaFilter<T> customFilter, AuthorizationManager<T> authorizationManager) throws BusinessLogicTransactionException {
-        return database.get(c, customFilter, authorizationManager);
+    public <T extends BaseEntity> Paging<T> getList(Class<T> c, CriteriaFilter<T> customFilter, AuthorizationManager<T> authorizationManager) throws BusinessLogicTransactionException {
+        return database.getList(c, customFilter, authorizationManager);
     }
 
     @Override

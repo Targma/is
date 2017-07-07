@@ -8,6 +8,7 @@ import si.fri.demo.is.core.businessLogic.database.ValidationManager;
 import si.fri.demo.is.core.businessLogic.dto.Paging;
 import si.fri.demo.is.core.businessLogic.exceptions.BusinessLogicTransactionException;
 import si.fri.demo.is.core.jpa.entities.base.BaseEntity;
+import si.fri.demo.is.core.restComponents.managers.ETagValidationManager;
 
 import javax.annotation.PostConstruct;
 import javax.ws.rs.GET;
@@ -15,6 +16,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.core.CacheControl;
 import javax.ws.rs.core.EntityTag;
+import javax.ws.rs.core.Request;
 import javax.ws.rs.core.Response;
 
 public abstract class GetResource<T extends BaseEntity> extends BaseResource {
@@ -33,7 +35,6 @@ public abstract class GetResource<T extends BaseEntity> extends BaseResource {
 
     protected AuthorizationManager<T> authorizationManager = null;
     protected ValidationManager<T> validationManager = null;
-    protected void initManagers() {}
 
     public GetResource(Class<T> type) {
         this.type = type;
@@ -41,7 +42,8 @@ public abstract class GetResource<T extends BaseEntity> extends BaseResource {
 
     @PostConstruct
     private void init(){
-        initManagers();
+        validationManager = initValidationManager();
+        authorizationManager = initAuthorizationManager();
     }
 
 
@@ -57,9 +59,9 @@ public abstract class GetResource<T extends BaseEntity> extends BaseResource {
         QueryParameters param = QueryParameters.query(uriInfo.getRequestUri().getQuery())
                 .maxLimit(defaultMaxLimit).defaultLimit(defaultMaxLimit).defaultOffset(0).build();
 
-        Paging<T> paging = getDatabaseService().get(type, param, authorizationManager);
+        Paging<T> paging = getDatabaseService().getList(type, param, authorizationManager);
 
-        Response.ResponseBuilder rb =  buildResponse(paging);
+        Response.ResponseBuilder rb = buildResponse(paging);
 
         if(listCacheControl){
             rb.cacheControl(buildCacheControl(listCacheControlMaxAge, listCacheControlPrivate));
@@ -137,6 +139,16 @@ public abstract class GetResource<T extends BaseEntity> extends BaseResource {
         responseBuilder.entity(paging.getItems());
 
         return responseBuilder;
+    }
+
+    protected AuthorizationManager<T> initAuthorizationManager() { return null; }
+    protected ValidationManager<T> initValidationManager() {
+        return new ETagValidationManager<T>() {
+            @Override
+            protected Request getRequest() {
+                return request;
+            }
+        };
     }
 
     public AuthorizationManager<T> getAuthorizationManager() {

@@ -286,9 +286,8 @@ public class CustomerResource extends CrudVersionResource<Customer> {
 
 
     @Override
-    protected void initManagers() {
-        super.initManagers();
-        authorizationManager = new AuthorizationManager<Customer>(getAuthorizedEntity()) {
+    protected AuthorizationManager<Customer> initAuthorizationManager() {
+        return new AuthorizationManager<Customer>(getAuthorizedEntity()) {
 
             @Override
             public void setAuthorityFilter(QueryParameters queryParameters, Database database) throws BusinessLogicTransactionException {

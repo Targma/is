@@ -62,4 +62,5 @@ public class AuthEntity {
     public boolean isInRole(String role){
         return roles.contains(role);
     }
+
 }

@@ -279,9 +279,8 @@ public class UserResource extends CrudResource<User> {
     }
 
     @Override
-    protected void initManagers() {
-        super.initManagers();
-        authorizationManager = new AuthorizationManager<User>(getAuthorizedEntity()) {
+    protected AuthorizationManager<User> initAuthorizationManager() {
+        return new AuthorizationManager<User>(getAuthorizedEntity()) {
 
             @Override
             public void checkAuthority(User entity, Database database) throws BusinessLogicTransactionException {

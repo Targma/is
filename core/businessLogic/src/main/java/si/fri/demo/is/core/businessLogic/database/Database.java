@@ -90,10 +90,10 @@ public class Database implements DatabaseImpl {
      * @return
      * @throws BusinessLogicTransactionException
      */
-    public <T extends BaseEntity> Paging<T> get(Class<T> c, QueryParameters param) throws BusinessLogicTransactionException{
-        return get(c, param, null);
+    public <T extends BaseEntity> Paging<T> getList(Class<T> c, QueryParameters param) throws BusinessLogicTransactionException{
+        return getList(c, param, null);
     }
-    public <T extends BaseEntity> Paging<T> get(Class<T> c, QueryParameters param, AuthorizationManager<T> authorizationManager) throws BusinessLogicTransactionException {
+    public <T extends BaseEntity> Paging<T> getList(Class<T> c, QueryParameters param, AuthorizationManager<T> authorizationManager) throws BusinessLogicTransactionException {
         try{
             if(authorizationManager != null){
                 authorizationManager.setAuthorityFilter(param, this);
@@ -111,10 +111,10 @@ public class Database implements DatabaseImpl {
     }
 
 
-    public <T extends BaseEntity> Paging<T> get(Class<T> c, CriteriaFilter<T> customFilter) throws BusinessLogicTransactionException{
-        return get(c, customFilter, null);
+    public <T extends BaseEntity> Paging<T> getList(Class<T> c, CriteriaFilter<T> customFilter) throws BusinessLogicTransactionException{
+        return getList(c, customFilter, null);
     }
-    public <T extends BaseEntity> Paging<T> get(Class<T> c, CriteriaFilter<T> customFilter, AuthorizationManager<T> authorizationManager) throws BusinessLogicTransactionException {
+    public <T extends BaseEntity> Paging<T> getList(Class<T> c, CriteriaFilter<T> customFilter, AuthorizationManager<T> authorizationManager) throws BusinessLogicTransactionException {
         try{
             if(authorizationManager != null){
                 authorizationManager.setAuthorityCriteria(customFilter, this);

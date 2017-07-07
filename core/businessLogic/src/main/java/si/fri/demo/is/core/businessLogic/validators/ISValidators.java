@@ -17,12 +17,12 @@ public class ISValidators {
                 return null;
             }
         } else {
-            T entity = db.get((Class<T>) value.getClass(), value.getId(), null);
-            if(entity == null){
-                throw new BusinessLogicTransactionException(Response.Status.BAD_REQUEST, value.getClass().getSimpleName() + " does not exist.");
-            } else {
+            try {
+                T entity = db.get((Class<T>) value.getClass(), value.getId(), null);
                 db.getEntityManager().detach(entity);
                 return entity;
+            } catch (BusinessLogicTransactionException e){
+                throw new BusinessLogicTransactionException(Response.Status.BAD_REQUEST, value.getClass().getSimpleName() + " does not exist.");
             }
         }
     }

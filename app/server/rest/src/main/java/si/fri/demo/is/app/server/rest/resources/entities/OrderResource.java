@@ -144,15 +144,14 @@ public class OrderResource extends GetResource<Order> {
     @Path("process")
     public Response process(@HeaderParam("X-Content") Boolean xContent, Order order) throws BusinessLogicTransactionException {
 
-        Order dbEntity = orderService.process(order);
+        Order dbEntity = orderService.process(getAuthorizedEntity(), order);
 
         return buildResponse(dbEntity, xContent, false, Response.Status.CREATED).build();
     }
 
     @Override
-    protected void initManagers() {
-        super.initManagers();
-        authorizationManager = new AuthorizationManager<Order>(getAuthorizedEntity()) {
+    protected AuthorizationManager<Order> initAuthorizationManager() {
+        return new AuthorizationManager<Order>(getAuthorizedEntity()) {
 
             @Override
             public void setAuthorityFilter(QueryParameters queryParameters, Database database) throws BusinessLogicTransactionException {

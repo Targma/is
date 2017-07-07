@@ -15,8 +15,8 @@ import javax.persistence.EntityManager;
 
 public interface DatabaseImpl {
 
-    <T extends BaseEntity> Paging<T> get(Class<T> c, QueryParameters param, AuthorizationManager<T> authorizationManager) throws BusinessLogicTransactionException;
-    <T extends BaseEntity> Paging<T> get(Class<T> c, CriteriaFilter<T> customFilter, AuthorizationManager<T> authorizationManager) throws BusinessLogicTransactionException;
+    <T extends BaseEntity> Paging<T> getList(Class<T> c, QueryParameters param, AuthorizationManager<T> authorizationManager) throws BusinessLogicTransactionException;
+    <T extends BaseEntity> Paging<T> getList(Class<T> c, CriteriaFilter<T> customFilter, AuthorizationManager<T> authorizationManager) throws BusinessLogicTransactionException;
     <T extends BaseEntity> T get(Class<T> c, Integer id, AuthorizationManager<T> authorizationManager) throws BusinessLogicTransactionException;
 
     <T extends BaseEntity> T create(T newEntity, AuthorizationManager<T> authorizationManager, ValidationManager<T> validationManager) throws BusinessLogicTransactionException;

@@ -2,11 +2,9 @@ package si.fri.demo.is.core.restComponents.resource;
 
 import si.fri.demo.is.core.businessLogic.exceptions.BusinessLogicTransactionException;
 import si.fri.demo.is.core.jpa.entities.base.BaseEntity;
-import si.fri.demo.is.core.restComponents.managers.ETagValidationManager;
 import si.fri.demo.is.core.restComponents.providers.configuration.PATCH;
 
 import javax.ws.rs.*;
-import javax.ws.rs.core.Request;
 import javax.ws.rs.core.Response;
 
 
@@ -68,15 +66,4 @@ public abstract class CrudResource<T extends BaseEntity> extends GetResource<T> 
         return buildResponse(dbEntity, xContent).build();
     }
 
-    @Override
-    protected void initManagers() {
-        if(getCacheControl) {
-            this.validationManager = new ETagValidationManager<T>() {
-                @Override
-                protected Request getRequest() {
-                    return request;
-                }
-            };
-        }
-    }
 }

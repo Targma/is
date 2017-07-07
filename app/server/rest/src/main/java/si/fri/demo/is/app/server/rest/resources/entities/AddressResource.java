@@ -256,9 +256,8 @@ public class AddressResource extends CrudVersionResource<Address> {
 
 
     @Override
-    protected void initManagers() {
-        super.initManagers();
-        authorizationManager = new AuthorizationManager<Address>(getAuthorizedEntity()) {
+    protected AuthorizationManager<Address> initAuthorizationManager() {
+        return new AuthorizationManager<Address>(getAuthorizedEntity()) {
 
             @Override
             public void setAuthorityFilter(QueryParameters queryParameters, Database database) throws BusinessLogicTransactionException {

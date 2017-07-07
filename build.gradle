@@ -12,13 +12,11 @@ buildscript {
 
 allprojects {
     apply plugin: "io.spring.dependency-management"
-
-    group 'si.fri.demo.is'
-    version '1.0-SNAPSHOT'
-
     apply plugin: 'java'
     apply plugin: 'idea'
 
+    group 'si.fri.demo.is'
+    version '1.0-SNAPSHOT'
     sourceCompatibility = 1.8
 
     repositories {
