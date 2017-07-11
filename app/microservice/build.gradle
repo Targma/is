@@ -9,7 +9,6 @@ dependencies {
     compile group: 'org.postgresql', name: 'postgresql'
 
     compile group: 'com.fasterxml.jackson.datatype', name: 'jackson-datatype-hibernate4'
-
     compile group: 'org.slf4j', name: 'slf4j-simple'
 
     testCompile group: 'junit', name: 'junit'
@@ -57,4 +56,10 @@ task buildKumuluzEE {
     dependsOn copyCompileClasses
     copyCompileDependencies.mustRunAfter build
     copyCompileClasses.mustRunAfter build
+}
+
+task runKumuluzEE(type: JavaExec) {
+    dependsOn build
+    main = 'com.kumuluz.ee.EeApplication'
+    classpath = sourceSets.main.runtimeClasspath
 }

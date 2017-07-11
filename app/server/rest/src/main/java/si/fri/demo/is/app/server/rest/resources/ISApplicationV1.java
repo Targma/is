@@ -35,9 +35,9 @@ import javax.ws.rs.core.Application;
         )
 )
 @ApplicationPath("/api/v1")
-public class SIApplicationV1 extends Application {
+public class ISApplicationV1 extends Application {
 
-    public SIApplicationV1() {
+    public ISApplicationV1() {
         BeanConfig beanConfig = new BeanConfig();
         beanConfig.setVersion("v1");
         beanConfig.setSchemes(new String[]{"http"});

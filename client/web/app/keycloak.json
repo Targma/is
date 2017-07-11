@@ -1,5 +1,5 @@
 {
   "realm": "is",
-  "url": "http://localhost:8081/auth",
+  "url": "http://localhost/auth",
   "clientId": "is-wildfly"
 }

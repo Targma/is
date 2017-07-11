@@ -67,7 +67,6 @@ def setProperties() {
 setProperties()
 
 ear {
-    appDirName 'src/main/app'
     libDirName 'APP-INF/lib'
     deploymentDescriptor {
         version = "1"

@@ -1,6 +1,6 @@
 import 'whatwg-fetch';
 
-export const HOST_URL = 'http://localhost:8080';
+export const HOST_URL = 'http://localhost';
 export const API_PREFIX = 'is/api';
 export const API_VERSION = 'v1';
 
