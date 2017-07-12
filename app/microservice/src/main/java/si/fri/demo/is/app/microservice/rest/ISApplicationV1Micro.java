@@ -4,6 +4,7 @@ import io.swagger.annotations.Contact;
 import io.swagger.annotations.Info;
 import io.swagger.annotations.SwaggerDefinition;
 import io.swagger.jaxrs.config.BeanConfig;
+import si.fri.demo.is.app.microservice.rest.providers.JSONConfiguration;
 import si.fri.demo.is.app.microservice.rest.resources.ProductResource;
 import si.fri.demo.is.core.restComponents.providers.configuration.CORSConfiguration;
 import si.fri.demo.is.core.restComponents.providers.exceptions.BusinessLogicOperationExceptionMapper;
@@ -48,7 +49,7 @@ public class ISApplicationV1Micro extends Application {
         resources.add(ProductResource.class);
 
         resources.add(CORSConfiguration.class);
-        //resources.add(JSONConfiguration.class);
+        resources.add(JSONConfiguration.class);
 
         resources.add(BusinessLogicOperationExceptionMapper.class);
         resources.add(BusinessLogicTransactionExceptionMapper.class);
