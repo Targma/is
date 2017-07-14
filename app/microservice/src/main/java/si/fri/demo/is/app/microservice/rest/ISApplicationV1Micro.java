@@ -29,7 +29,7 @@ import java.util.Set;
         produces = {"application/json"}
 )
 
-@ApplicationPath("/is/api/v1/")
+@ApplicationPath("/api/v1/")
 public class ISApplicationV1Micro extends Application {
 
     public ISApplicationV1Micro() {
