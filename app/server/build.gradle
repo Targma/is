@@ -1,3 +1,7 @@
+plugins {
+    id "com.bmuschko.cargo" version "2.2.3"
+}
+
 repositories {
     maven {
         url 'https://repo.gradle.org/gradle/libs-releases'
@@ -20,6 +24,9 @@ dependencies {
 
     testCompile "org.wildfly.arquillian:wildfly-arquillian-container-embedded:2.0.2.Final"
 
+    def cargoVersion = '1.6.4'
+    cargo "org.codehaus.cargo:cargo-core-uberjar:$cargoVersion",
+            "org.codehaus.cargo:cargo-ant:$cargoVersion"
 }
 
 /**
@@ -55,4 +62,22 @@ test {
     systemProperty 'java.util.logging.manager', project.loggingManager
     systemProperty 'jboss.server.default.config', project.config
     systemProperty 'modulePath', project.modules
+}
+
+cargo {
+    containerId = 'wildfly10x'
+    port = 8080
+
+    deployable{
+        file = file(project.projectDir.path + '/ear/build/libs/ear-1.0-SNAPSHOT.ear')
+        context = ''
+    }
+
+    local{
+        homeDir = file(project.jbossHome)
+        outputFile = new File('out.log')
+        containerProperties {
+            property 'cargo.jboss.configuration', 'standalone-full'
+        }
+    }
 }
