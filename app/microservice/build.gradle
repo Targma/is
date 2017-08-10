@@ -51,15 +51,16 @@ task copyCompileClasses(type: Copy) {
 }
 
 task buildKumuluzEE {
-    dependsOn build
+    dependsOn assemble
     dependsOn copyCompileDependencies
     dependsOn copyCompileClasses
-    copyCompileDependencies.mustRunAfter build
-    copyCompileClasses.mustRunAfter build
+    copyCompileDependencies.mustRunAfter assemble
+    copyCompileClasses.mustRunAfter assemble
 }
 
 task runKumuluzEE(type: JavaExec) {
-    dependsOn build
+    dependsOn assemble
     main = 'com.kumuluz.ee.EeApplication'
-    classpath = sourceSets.main.runtimeClasspath
+    classpath = files(project.buildDir.name + "/kumuluzee/classes") + fileTree(dir: project.buildDir.name + "/kumuluzee/dependency")
+    environment('PORT', '7080')
 }

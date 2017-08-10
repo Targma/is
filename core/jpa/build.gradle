@@ -105,7 +105,7 @@ task initMainDatabase(type: Exec) {
 }
 task initTestDatabase(type: Exec) {
     workingDir project.database_bin
-    commandLine 'cmd', '/c', getCreateDatabaseCommand(project.liquibase_database_name)
+    commandLine 'cmd', '/c', getCreateDatabaseCommand(project.liquibase_test_database_name)
 }
 task initAllDatabases() {
     dependsOn initMainDatabase

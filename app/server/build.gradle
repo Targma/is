@@ -51,8 +51,6 @@ def setProperties() {
 
 setProperties()
 
-tasks.test.dependsOn(':app:server:ear:build')
-
 test {
     environment 'JBOSS_HOME', project.jbossHome
 
@@ -64,20 +62,27 @@ test {
     systemProperty 'modulePath', project.modules
 }
 
+tasks.test.dependsOn(':app:server:ear:assemble')
+
 cargo {
     containerId = 'wildfly10x'
     port = 8080
-
     deployable{
         file = file(project.projectDir.path + '/ear/build/libs/ear-1.0-SNAPSHOT.ear')
-        context = ''
     }
-
-    local{
+    local {
+        //outputFile = new File('out.log')
         homeDir = file(project.jbossHome)
-        outputFile = new File('out.log')
         containerProperties {
             property 'cargo.jboss.configuration', 'standalone-full'
         }
     }
+}
+
+cargoRunLocal{
+    dependsOn ':app:server:ear:assemble'
+}
+
+cargoStartLocal{
+    dependsOn ':app:server:ear:assemble'
 }
