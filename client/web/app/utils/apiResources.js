@@ -1,7 +1,7 @@
 import 'whatwg-fetch';
 
-export const HOST_URL = 'http://localhost:8080';  // Change in case of proxy
-export const API_PREFIX = 'is/api';
+export const HOST_URL = 'http://localhost';  // Change in case of proxy
+export const API_PREFIX = 'api';
 export const API_VERSION = 'v1';
 
 export const API_PATH = `${HOST_URL}/${API_PREFIX}/${API_VERSION}`;

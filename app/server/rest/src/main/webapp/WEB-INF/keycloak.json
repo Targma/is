@@ -1,6 +1,6 @@
 {
   "realm": "is",
-  "auth-server-url": "http://localhost:8081/auth",
+  "auth-server-url": "http://localhost/auth",
   "ssl-required": "external",
   "resource": "is-wildfly",
   "public-client": true
