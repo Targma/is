@@ -10,7 +10,7 @@ import si.fri.demo.is.core.businessLogic.database.ValidationManager;
 import si.fri.demo.is.core.businessLogic.dto.Paging;
 import si.fri.demo.is.core.businessLogic.exceptions.BusinessLogicTransactionException;
 import si.fri.demo.is.core.jpa.entities.Customer;
-import si.fri.demo.is.core.jpa.entities.User;
+import si.fri.demo.is.core.jpa.entities.Administrator;
 import si.fri.demo.is.core.jpa.entities.base.BaseEntity;
 import si.fri.demo.is.core.jpa.entities.base.BaseEntityVersion;
 
@@ -115,7 +115,7 @@ public class DatabaseService implements DatabaseServiceLocal {
     }
 
     @Override
-    public User getAuthorizedUser(AuthEntity authEntity) throws BusinessLogicTransactionException {
+    public Administrator getAuthorizedUser(AuthEntity authEntity) throws BusinessLogicTransactionException {
         return database.getAuthorizedUser(authEntity);
     }
 

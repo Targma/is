@@ -12,7 +12,7 @@ import si.fri.demo.is.api.exception.ISApiException;
 import si.fri.demo.is.api.resource.base.ISResource;
 import si.fri.demo.is.app.server.test.ISDeployment;
 import si.fri.demo.is.core.jpa.entities.Customer;
-import si.fri.demo.is.core.jpa.entities.User;
+import si.fri.demo.is.core.jpa.entities.Administrator;
 import si.fri.demo.is.core.jpa.entities.base.BaseEntity;
 
 import java.io.File;
@@ -50,7 +50,7 @@ public abstract class BaseResourceTest<T extends BaseEntity, B extends ISResourc
 
     protected void initUserAndCustomer(){
         try {
-            EntityResponse<User> userEntityData = api.user.login();
+            EntityResponse<Administrator> userEntityData = api.administrator.login();
             Assert.assertTrue(userEntityData.isStatusValid());
 
             EntityResponse<Customer> customerEntityData = api.customer.login();

@@ -7,7 +7,7 @@ import si.fri.demo.is.api.resource.expand.ISLoginCrudResource;
 import si.fri.demo.is.core.jpa.entities.Address;
 import si.fri.demo.is.core.jpa.entities.Customer;
 import si.fri.demo.is.core.jpa.entities.Product;
-import si.fri.demo.is.core.jpa.entities.User;
+import si.fri.demo.is.core.jpa.entities.Administrator;
 
 public class ISApi {
 
@@ -17,7 +17,7 @@ public class ISApi {
     public ISLoginCrudResource<Customer> customer;
     public OrderCrudResource order;
     public ISCrudResource<Product> product;
-    public ISLoginCrudResource<User> user;
+    public ISLoginCrudResource<Administrator> administrator;
 
     public ISApi(ISApiConfiguration configuration) {
         this(configuration, null);
@@ -34,7 +34,7 @@ public class ISApi {
         customer = new ISLoginCrudResource<>(core, Customer.class);
         order = new OrderCrudResource(core);
         product = new ISCrudResource<>(core, Product.class);
-        user = new ISLoginCrudResource<>(core, User.class);
+        administrator = new ISLoginCrudResource<>(core, Administrator.class);
     }
 
     public ISApiCore getCore() {

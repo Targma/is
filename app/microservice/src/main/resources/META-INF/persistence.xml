@@ -13,7 +13,7 @@
         <class>si.fri.demo.is.core.jpa.entities.Product</class>
         <class>si.fri.demo.is.core.jpa.entities.Customer</class>
         <class>si.fri.demo.is.core.jpa.entities.ProductOnOrder</class>
-        <class>si.fri.demo.is.core.jpa.entities.User</class>
+        <class>si.fri.demo.is.core.jpa.entities.Administrator</class>
         <class>si.fri.demo.is.core.jpa.entities.Address</class>
 
         <properties>

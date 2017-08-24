@@ -7,7 +7,7 @@ import si.fri.demo.is.core.businessLogic.authentication.AuthEntity;
 import si.fri.demo.is.core.businessLogic.dto.Paging;
 import si.fri.demo.is.core.businessLogic.exceptions.BusinessLogicTransactionException;
 import si.fri.demo.is.core.jpa.entities.Customer;
-import si.fri.demo.is.core.jpa.entities.User;
+import si.fri.demo.is.core.jpa.entities.Administrator;
 import si.fri.demo.is.core.jpa.entities.base.BaseEntity;
 import si.fri.demo.is.core.jpa.entities.base.BaseEntityVersion;
 
@@ -33,6 +33,6 @@ public interface DatabaseImpl {
     <U extends BaseEntity> JPAJinqStream<U> getStream(Class<U> entity);
 
     Customer getAuthorizedCustomer(AuthEntity authEntity) throws BusinessLogicTransactionException;
-    User getAuthorizedUser(AuthEntity authEntity) throws BusinessLogicTransactionException;
+    Administrator getAuthorizedUser(AuthEntity authEntity) throws BusinessLogicTransactionException;
 
 }

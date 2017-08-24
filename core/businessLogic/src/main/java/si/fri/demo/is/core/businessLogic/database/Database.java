@@ -9,7 +9,7 @@ import si.fri.demo.is.core.businessLogic.authentication.AuthEntity;
 import si.fri.demo.is.core.businessLogic.dto.Paging;
 import si.fri.demo.is.core.businessLogic.exceptions.BusinessLogicTransactionException;
 import si.fri.demo.is.core.jpa.entities.Customer;
-import si.fri.demo.is.core.jpa.entities.User;
+import si.fri.demo.is.core.jpa.entities.Administrator;
 import si.fri.demo.is.core.jpa.entities.base.BaseEntity;
 import si.fri.demo.is.core.jpa.entities.base.BaseEntityVersion;
 
@@ -56,15 +56,15 @@ public class Database implements DatabaseImpl {
         }
     }
 
-    public User getAuthorizedUser(AuthEntity authEntity) throws BusinessLogicTransactionException {
+    public Administrator getAuthorizedUser(AuthEntity authEntity) throws BusinessLogicTransactionException {
         final String authId = authEntity.getId();
-        List<User> userList = getStream(User.class)
+        List<Administrator> administratorList = getStream(Administrator.class)
                 .where(e -> e.getAuthenticationId().equals(authId) && !e.getIsDeleted()).toList();
 
-        if(userList.isEmpty()){
+        if(administratorList.isEmpty()){
             throw new BusinessLogicTransactionException(Response.Status.BAD_REQUEST,  "User account does not exist, you must activate it.");
         } else {
-            return userList.get(0);
+            return administratorList.get(0);
         }
     }
 

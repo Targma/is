@@ -14,10 +14,10 @@ import javax.persistence.Table;
 import java.lang.reflect.Field;
 
 @Entity
-@Table(name="\"user\"")
+@Table(name="administrator")
 @Cacheable(true)
 @JsonIdentityInfo(generator=ObjectIdGenerators.IntSequenceGenerator.class)
-public class User extends BaseEntity<User> {
+public class Administrator extends BaseEntity<Administrator> {
 
     @Column(length = Constants.DEF_STRING_LEN)
     private String name;
