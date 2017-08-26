@@ -8,6 +8,7 @@ import si.fri.demo.is.core.businessLogic.authentication.AuthEntity;
 import si.fri.demo.is.core.businessLogic.database.DatabaseImpl;
 import si.fri.demo.is.core.businessLogic.exceptions.BusinessLogicTransactionException;
 import si.fri.demo.is.core.jpa.entities.Product;
+import si.fri.demo.is.core.restComponents.enums.CacheControlType;
 import si.fri.demo.is.core.restComponents.providers.configuration.PATCH;
 import si.fri.demo.is.core.restComponents.providers.exceptions.ApiException;
 import si.fri.demo.is.core.restComponents.resource.CrudVersionResource;
@@ -42,11 +43,8 @@ public class ProductResource extends CrudVersionResource<Product> {
     public ProductResource() {
         super(Product.class);
 
-        getCacheControl = true;
-        getCacheControlPrivate = false;
-
-        listCacheControl = true;
-        listCacheControlPrivate = false;
+        getCacheControl = CacheControlType.PUBLIC;
+        listCacheControl = CacheControlType.PUBLIC;
     }
 
 

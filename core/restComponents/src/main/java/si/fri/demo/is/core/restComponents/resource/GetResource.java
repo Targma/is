@@ -8,6 +8,7 @@ import si.fri.demo.is.core.businessLogic.database.ValidationManager;
 import si.fri.demo.is.core.businessLogic.dto.Paging;
 import si.fri.demo.is.core.businessLogic.exceptions.BusinessLogicTransactionException;
 import si.fri.demo.is.core.jpa.entities.base.BaseEntity;
+import si.fri.demo.is.core.restComponents.enums.CacheControlType;
 import si.fri.demo.is.core.restComponents.managers.ETagValidationManager;
 
 import javax.annotation.PostConstruct;
@@ -23,13 +24,12 @@ public abstract class GetResource<T extends BaseEntity> extends BaseResource {
 
     protected int defaultMaxLimit = 50;
 
-    protected boolean listCacheControl = false;
-    protected boolean listCacheControlPrivate = true;
+    protected CacheControlType listCacheControl = CacheControlType.NONE;
     protected int listCacheControlMaxAge = 60;
 
-    protected boolean getCacheControl = false;
-    protected boolean getCacheControlPrivate = true;
+    protected CacheControlType getCacheControl = CacheControlType.NONE;
     protected int getCacheControlMaxAge = 180;
+
 
     protected Class<T> type;
 
@@ -63,8 +63,8 @@ public abstract class GetResource<T extends BaseEntity> extends BaseResource {
 
         Response.ResponseBuilder rb = buildResponse(paging);
 
-        if(listCacheControl){
-            rb.cacheControl(buildCacheControl(listCacheControlMaxAge, listCacheControlPrivate));
+        if(!listCacheControl.equals(CacheControlType.NONE)){
+            rb.cacheControl(buildCacheControl(listCacheControlMaxAge, listCacheControl));
         }
 
         return rb.build();
@@ -85,17 +85,26 @@ public abstract class GetResource<T extends BaseEntity> extends BaseResource {
             rb.tag(tag);
         }
 
-        if(getCacheControl){
-            rb.cacheControl(buildCacheControl(getCacheControlMaxAge, getCacheControlPrivate));
+        if(!getCacheControl.equals(CacheControlType.NONE)){
+            rb.cacheControl(buildCacheControl(getCacheControlMaxAge, getCacheControl));
         }
         return rb.build();
     }
 
 
-    protected CacheControl buildCacheControl(int maxAge, boolean isPrivate){
+    protected CacheControl buildCacheControl(int maxAge, CacheControlType cacheControlType){
         CacheControl cc = new CacheControl();
         cc.setMaxAge(maxAge);
-        cc.setPrivate(isPrivate);
+
+        switch (cacheControlType){
+            case PUBLIC:
+                cc.setPrivate(false);
+                break;
+            case PRIVATE:
+                cc.setPrivate(true);
+                break;
+
+        }
         return cc;
     }
 
