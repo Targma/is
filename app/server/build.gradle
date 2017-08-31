@@ -80,9 +80,9 @@ cargo {
 }
 
 cargoRunLocal{
-    dependsOn ':app:server:ear:assemble'
+    dependsOn ':app:server:ear:ear'
 }
 
 cargoStartLocal{
-    dependsOn ':app:server:ear:assemble'
+    dependsOn ':app:server:ear:ear'
 }
